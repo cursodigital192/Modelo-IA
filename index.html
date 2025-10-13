@@ -61,45 +61,8 @@
   .input{flex:1;background:#2c3e50;border-radius:20px;padding:6px 10px;min-height:36px;display:flex;align-items:center;color:#fff;font-size:13px}
   .input[contenteditable]{outline:none}
   .btn{background:#25d366;border-radius:12px;padding:6px 10px;color:white;font-weight:600;border:none;cursor:pointer;font-size:12px}
-  .audio{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    background:#2c3e50;
-    padding:6px 10px;
-    border-radius:16px;
-    max-width:200px;
-  }
-  .play{
-    width:32px;
-    height:32px;
-    border-radius:50%;
-    display:grid;
-    place-items:center;
-    border:none;
-    cursor:pointer;
-    color:#fff;
-    background:#25d366;
-    font-size:16px;
-    flex-shrink:0;
-  }
-  .audio-waves{
-    display:flex;
-    gap:2px;
-    margin-left:auto;
-  }
-  .wave{
-    width:4px;
-    height:12px;
-    background:#fff;
-    animation:wave 1s infinite;
-  }
-  .wave:nth-child(2){animation-delay:0.2s;}
-  .wave:nth-child(3){animation-delay:0.4s;}
-  @keyframes wave{
-    0%,40%,100%{height:4px;}
-    20%{height:12px;}
-  }
+  .audio{display:flex;align-items:center;gap:6px}
+  .play{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;border:1px solid #444;cursor:pointer;color:#fff;background:#25d366;font-size:16px}
   .suggestions-container{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
   .suggestion-btn{background:#25d366;color:white;padding:4px 10px;border-radius:16px;border:none;cursor:pointer;font-weight:600;font-size:12px}
   .checkout-link{display:block;margin-top:4px;color:#4ea5f7;text-decoration:underline;cursor:pointer;font-weight:600;font-size:13px;}
@@ -167,29 +130,18 @@ function appendBubble(text, who='bot', extras={}){
   if(extras.isAudio){
     const audioWrap = document.createElement('div');
     audioWrap.className = 'audio';
-
-    const play = document.createElement('button');
+    const play = document.createElement('div');
     play.className='play';
-    play.innerHTML = `
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-      </svg>
-    `;
-
-    const wavesContainer = document.createElement('div');
-    wavesContainer.className = 'audio-waves';
-    wavesContainer.innerHTML = '<div class="wave"></div><div class="wave"></div><div class="wave"></div>';
-
     const audioEl = new Audio(extras.src);
+
     play.addEventListener('click', ()=>{
       audioEl.play();
-      play.disabled = true;
+      play.style.pointerEvents='none';
       play.style.opacity='0.6';
       appendSuggestions(['Não, quero comprar o curso']);
     });
 
     audioWrap.appendChild(play);
-    audioWrap.appendChild(wavesContainer);
     b.appendChild(audioWrap);
   } else if(extras.isCheckout){
     b.innerHTML = `${text}<a class="checkout-link" href="${extras.link}" target="_blank">Clique aqui para comprar</a>`;
@@ -262,7 +214,10 @@ function sendMessage(){
   if(!userResponded){
     userResponded = true;
     setTimeout(()=>{
-      appendBubble(null,'bot',{isAudio:true, src:'https://s31.aconvert.com/convert/p3r68-cdx67/8kair-dvode.mp3'});
+      appendBubble(null,'bot',{
+        isAudio:true,
+        src:'https://github.com/cursodigital192/audio-modelo-conversafake/raw/main/audio.mp3'
+      });
     }, 600);
   } else {
     handleResponse(text);
