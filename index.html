@@ -5,36 +5,40 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Chat WhatsApp - Simulado (IA)</title>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, Arial, sans-serif}
-  body{background:#e6f0ef;display:flex;align-items:center;justify-content:center;height:100vh}
-  .app{width:420px;height:780px;background:#ffffff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.12);overflow:hidden;display:flex;flex-direction:column}
-  .header{height:72px;padding:12px 14px;display:flex;align-items:center;border-bottom:1px solid #e6e6e6}
-  .avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;margin-right:12px;flex-shrink:0;background:#ccc}
-  .avatar img{width:100%;height:100%;object-fit:cover}
-  .meta{flex:1}
-  .name{font-weight:600}
-  .status{font-size:12px;color:#6b6b6b}
-  .messages{flex:1;padding:20px;display:flex;flex-direction:column;gap:12px;overflow:auto;background-image:linear-gradient(180deg, rgba(0,0,0,0.01), transparent)}
-  .bubble{max-width:78%;padding:10px 14px;border-radius:18px;line-height:1.35;position:relative}
-  .from-bot{background:#ffffff;border:1px solid #e6e6e6;align-self:flex-start;border-top-left-radius:6px}
-  .from-me{background:#dcf8c6;align-self:flex-end;border-top-right-radius:6px}
-  .composer{border-top:1px solid #e6e6e6;padding:10px;display:flex;flex-direction:column;gap:6px}
-  .row{display:flex;align-items:center;gap:8px}
-  .input{flex:1;background:#f7f7f7;border-radius:20px;padding:10px 14px;min-height:44px;display:flex;align-items:center}
-  .input[contenteditable]{outline:none}
-  .btn{background:#25d366;border-radius:12px;padding:8px 12px;color:white;font-weight:600;border:none;cursor:pointer}
-  .audio{display:flex;align-items:center;gap:8px}
-  .play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #ddd;cursor:pointer}
-  .suggestions-container{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
-  .suggestion-btn{background:#25d366;color:white;padding:6px 12px;border-radius:18px;border:none;cursor:pointer;font-weight:600;font-size:14px}
-  .checkout-link{display:block;margin-top:6px;color:#007aff;text-decoration:underline;cursor:pointer;font-weight:600;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, Arial, sans-serif}
+body{background:#e6f0ef;display:flex;align-items:center;justify-content:center;height:100vh}
+.app{width:420px;height:780px;background:#ffffff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.12);overflow:hidden;display:flex;flex-direction:column}
+.header{height:72px;padding:12px 14px;display:flex;align-items:center;border-bottom:1px solid #e6e6e6}
+.avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;margin-right:12px;flex-shrink:0;background:#ccc}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.meta{flex:1}
+.name{font-weight:600}
+.status{font-size:12px;color:#6b6b6b}
+.messages{flex:1;padding:20px;display:flex;flex-direction:column;gap:12px;overflow:auto;background-image:linear-gradient(180deg, rgba(0,0,0,0.01), transparent)}
+.bubble{max-width:78%;padding:10px 14px;border-radius:18px;line-height:1.35}
+.from-bot{background:#ffffff;border:1px solid #e6e6e6;align-self:flex-start;border-top-left-radius:6px}
+.from-me{background:#dcf8c6;align-self:flex-end;border-top-right-radius:6px}
+.bubble small{display:block;margin-top:6px;font-size:11px;color:#666}
+.composer{height:88px;border-top:1px solid #e6e6e6;padding:10px;display:flex;flex-direction:column;gap:6px;position:relative}
+.row{display:flex;align-items:center;gap:8px}
+.input{flex:1;background:#f7f7f7;border-radius:20px;padding:10px 14px;min-height:44px;display:flex;align-items:center}
+.input[contenteditable]{outline:none}
+.btn{background:#25d366;border-radius:12px;padding:8px 12px;color:white;font-weight:600;border:none;cursor:pointer}
+.link-btn{background:transparent;color:#007aff;border:1px solid #e0e0e0;padding:6px 8px;border-radius:8px;cursor:pointer}
+.typing{font-size:12px;color:#666;margin-left:6px}
+.audio{display:flex;align-items:center;gap:8px}
+.play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #ddd;cursor:pointer}
+.promo{background:#fff8e6;border:1px solid #ffd28a;padding:10px;border-radius:12px}
+.promo a{display:inline-block;margin-top:8px;background:#ff8c00;padding:8px 12px;color:#fff;border-radius:8px;text-decoration:none}
+.suggestions{position:absolute;bottom:60px;left:10px;right:10px;display:flex;gap:6px;flex-wrap:wrap}
+.suggestions button{background:#dcf8c6;border:none;padding:6px 12px;border-radius:20px;cursor:pointer;font-weight:600}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
     <div class="avatar">
-      <img src="https://osegredo.com.br/wp-content/uploads/2024/01/Emily-Pellegrini-1.jpg" alt="Melissa">
+      <img src="https://osegredo.com.br/wp-content/uploads/2024/01/Emily-Pellegrini-1.jpg" alt="Melissa Castro">
     </div>
     <div class="meta">
       <div class="name">Melissa</div>
@@ -45,7 +49,7 @@
   <div class="messages" id="messages"></div>
 
   <div class="composer">
-    <div id="suggestionsArea" class="suggestions-container"></div>
+    <div class="suggestions" id="suggestions"></div>
     <div class="row">
       <div class="input" id="input" contenteditable="true" role="textbox" aria-multiline="true" placeholder="Escreva uma mensagem..."></div>
       <button class="btn" id="sendBtn">Enviar</button>
@@ -57,129 +61,83 @@
 const messagesEl = document.getElementById('messages');
 const inputEl = document.getElementById('input');
 const sendBtn = document.getElementById('sendBtn');
-const suggestionsArea = document.getElementById('suggestionsArea');
+const suggestionsEl = document.getElementById('suggestions');
 
-let userResponded = false;
-let firstAutoResponseDone = false;
-let courseOptionsSent = false;
-
-// função para criar bubble
-function appendBubble(text, who='bot', extras={}){
+function appendBubble(text, who='bot', extras={}) {
   const b = document.createElement('div');
   b.className = 'bubble ' + (who==='bot' ? 'from-bot' : 'from-me');
-
   if(extras.isAudio){
     const audioWrap = document.createElement('div');
-    audioWrap.className = 'audio';
+    audioWrap.className='audio';
     const play = document.createElement('div');
     play.className='play';
     play.innerText='▶';
     const audioEl = new Audio(extras.src);
-
-    play.addEventListener('click', ()=>{
-      audioEl.play();
-      play.style.pointerEvents='none';
-      play.style.opacity='0.6';
-      appendSuggestions(['Não, quero comprar o curso']);
-    });
-
+    play.addEventListener('click',()=>audioEl.play());
     audioWrap.appendChild(play);
     b.appendChild(audioWrap);
-  } else if(extras.isCheckout){
-    b.innerHTML = `${text}<a class="checkout-link" href="${extras.link}" target="_blank">Clique aqui para comprar</a>`;
-    // adicionar botão de voltar após checkout
-    appendSuggestions(['Escolher outras opções']);
   } else {
     b.innerHTML = text.replace(/\n/g,'<br>');
   }
-
   messagesEl.appendChild(b);
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-// função para criar sugestões de resposta
-function appendSuggestions(options){
-  suggestionsArea.innerHTML='';
-  options.forEach(opt=>{
+function appendSuggestions(list){
+  suggestionsEl.innerHTML='';
+  list.forEach(item=>{
     const btn = document.createElement('button');
-    btn.className='suggestion-btn';
-    btn.innerText=opt;
-    btn.addEventListener('click', ()=>{
-      appendBubble(opt,'me');
-      handleResponse(opt);
-      suggestionsArea.innerHTML='';
-    });
-    suggestionsArea.appendChild(btn);
+    btn.innerText = item;
+    btn.addEventListener('click',()=>handleSuggestion(item));
+    suggestionsEl.appendChild(btn);
   });
-  messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-// função para lidar com qualquer resposta
-function handleResponse(text){
-  const lowerText = text.toLowerCase();
-
-  if(lowerText==='escolher outras opções'){
-    // volta as opções de curso
-    appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']);
-    return;
-  }
-
-  if(['hot starter','hot essential','hot founder'].includes(lowerText)){
+function handleSuggestion(text){
+  text = text.trim();
+  if(['Hot Starter','Hot Essential','Hot Founder'].includes(text)){
+    appendBubble(text,'me');
     let link='';
-    if(lowerText==='hot starter') link='https://go.perfectpay.com.br/PPU38CQ08HP';
-    else if(lowerText==='hot essential') link='https://go.perfectpay.com.br/PPU38CQ08I2';
-    else if(lowerText==='hot founder') link='https://go.perfectpay.com.br/PPU38CQ08I3';
-
+    if(text==='Hot Starter') link='https://go.perfectpay.com.br/PPU38CQ08HP';
+    else if(text==='Hot Essential') link='https://go.perfectpay.com.br/PPU38CQ08I2';
+    else if(text==='Hot Founder') link='https://go.perfectpay.com.br/PPU38CQ08I3';
     setTimeout(()=>{
-      appendBubble('Ótima escolha, vou te enviar o link checkout para você iniciar suas operações agora mesmo!','bot',{isCheckout:true, link:link});
+      appendBubble('Ótima escolha, vou te enviar o link checkout para você iniciar suas operações agora mesmo!');
+      setTimeout(()=>appendBubble(`<a href="${link}" target="_blank">${link}</a>`),300);
+      setTimeout(()=>appendSuggestions(['Escolher outras opções']),500);
     },500);
-    return;
-  }
-
-  // caso seja qualquer outra resposta
-  if(!firstAutoResponseDone){
-    firstAutoResponseDone = true;
-    setTimeout(()=>{
-      appendBubble('Ótimo, vou te enviar alguns detalhes sobre o curso','bot');
-      setTimeout(()=>{
-        appendBubble(
-          'Temos 3 modelos de curso, sendo o Hot Starter, onde você vai aprender o básico como criar sua própria modelo do job; o Hot Essential, onde você aprenderá do básico ao avançado e receberá todos os links e dicas valiosas; e, por fim, para uma estrutura sólida e escalável, temos o Hot Founder, onde você aprenderá tudo inclusive criar sua modelo com IA. Qual dos 3 você tem interesse?',
-          'bot'
-        );
-        setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),500);
-        courseOptionsSent = true;
-      },500);
-    },500);
+  } else if(text==='Escolher outras opções'){
+    appendBubble(text,'me');
+    setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),300);
   }
 }
 
-// enviar mensagem do usuário
-function sendMessage(){
-  const text = inputEl.innerText.trim();
-  if(!text) return;
-  appendBubble(text,'me');
-  inputEl.value = '';
-  inputEl.innerText = '';
-
-  if(!userResponded){
-    userResponded = true;
-    setTimeout(()=>{ 
-      appendBubble(null,'bot',{isAudio:true, src:'https://s31.aconvert.com/convert/p3r68-cdx67/8kair-dvode.mp3'});
-    }, 800);
-  } else {
-    handleResponse(text);
-  }
-}
-
-// eventos
-sendBtn.addEventListener('click', sendMessage);
-inputEl.addEventListener('keydown', e=>{
-  if(e.key==='Enter' && !e.shiftKey){e.preventDefault(); sendMessage();}
+// Boas-vindas
+window.addEventListener('load',()=>{
+  appendBubble('Oiie meu amor, tudo bem? eu me chamo Melissa.');
 });
 
-// mensagem inicial
-window.addEventListener('load', ()=>{
-  appendBubble('Oiie meu amor, tudo bem?? eu me chamo Melissa.','bot');
+// Resposta do cliente
+sendBtn.addEventListener('click',()=>{
+  const val=inputEl.innerText.trim();
+  if(!val) return;
+  appendBubble(val,'me');
+  inputEl.innerText='';
+  // primeiro audio após a mensagem do cliente
+  setTimeout(()=>{
+    appendBubble('', 'bot', {isAudio:true, src:'https://s31.aconvert.com/convert/p3r68-cdx67/8kair-dvode.mp3'});
+    setTimeout(()=>{
+      appendBubble('Ou você prefere aprender a criar uma modelo do job e faturar com isso?');
+      appendSuggestions(['Não, quero comprar o curso']);
+    },700);
+  },500);
+});
+
+inputEl.addEventListener('keydown',(e)=>{
+  if(e.key==='Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendBtn.click();
+  }
 });
 </script>
 </body>
