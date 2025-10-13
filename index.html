@@ -45,9 +45,7 @@
   <div class="messages" id="messages"></div>
 
   <div class="composer">
-    <!-- container para sugestões -->
     <div id="suggestionsArea" class="suggestions-container"></div>
-
     <div class="row">
       <div class="input" id="input" contenteditable="true" role="textbox" aria-multiline="true" placeholder="Escreva uma mensagem..."></div>
       <button class="btn" id="sendBtn">Enviar</button>
@@ -89,6 +87,8 @@ function appendBubble(text, who='bot', extras={}){
     b.appendChild(audioWrap);
   } else if(extras.isCheckout){
     b.innerHTML = `${text}<a class="checkout-link" href="${extras.link}" target="_blank">Clique aqui para comprar</a>`;
+    // adicionar botão de voltar após checkout
+    appendSuggestions(['Escolher outras opções']);
   } else {
     b.innerHTML = text.replace(/\n/g,'<br>');
   }
@@ -116,39 +116,40 @@ function appendSuggestions(options){
 
 // função para lidar com qualquer resposta
 function handleResponse(text){
-  if(courseOptionsSent){
-    // resposta específica para cada curso
-    let link = '';
-    if(text.toLowerCase() === 'hot starter') link = 'https://go.perfectpay.com.br/PPU38CQ08HP';
-    else if(text.toLowerCase() === 'hot essential') link = 'https://go.perfectpay.com.br/PPU38CQ08I2';
-    else if(text.toLowerCase() === 'hot founder') link = 'https://go.perfectpay.com.br/PPU38CQ08I3';
+  const lowerText = text.toLowerCase();
 
-    if(link){
-      setTimeout(()=>{
-        appendBubble('Ótima escolha, vou te enviar o link checkout para você iniciar suas operações agora mesmo!','bot',{isCheckout:true, link:link});
-      },500);
-    }
+  if(lowerText==='escolher outras opções'){
+    // volta as opções de curso
+    appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']);
     return;
   }
 
-  setTimeout(()=>{
-    appendBubble('Ótimo, vou te enviar alguns detalhes sobre o curso','bot');
-  },500);
+  if(['hot starter','hot essential','hot founder'].includes(lowerText)){
+    let link='';
+    if(lowerText==='hot starter') link='https://go.perfectpay.com.br/PPU38CQ08HP';
+    else if(lowerText==='hot essential') link='https://go.perfectpay.com.br/PPU38CQ08I2';
+    else if(lowerText==='hot founder') link='https://go.perfectpay.com.br/PPU38CQ08I3';
 
+    setTimeout(()=>{
+      appendBubble('Ótima escolha, vou te enviar o link checkout para você iniciar suas operações agora mesmo!','bot',{isCheckout:true, link:link});
+    },500);
+    return;
+  }
+
+  // caso seja qualquer outra resposta
   if(!firstAutoResponseDone){
     firstAutoResponseDone = true;
     setTimeout(()=>{
-      appendBubble(
-        'Temos 3 modelos de curso, sendo o Hot Starter, onde você vai aprender o básico como criar sua própria modelo do job; o Hot Essential, onde você aprenderá do básico ao avançado e receberá todos os links e dicas valiosas; e, por fim, para uma estrutura sólida e escalável, temos o Hot Founder, onde você aprenderá tudo inclusive criar sua modelo com IA. Qual dos 3 você tem interesse?',
-        'bot'
-      );
-
+      appendBubble('Ótimo, vou te enviar alguns detalhes sobre o curso','bot');
       setTimeout(()=>{
-        appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']);
+        appendBubble(
+          'Temos 3 modelos de curso, sendo o Hot Starter, onde você vai aprender o básico como criar sua própria modelo do job; o Hot Essential, onde você aprenderá do básico ao avançado e receberá todos os links e dicas valiosas; e, por fim, para uma estrutura sólida e escalável, temos o Hot Founder, onde você aprenderá tudo inclusive criar sua modelo com IA. Qual dos 3 você tem interesse?',
+          'bot'
+        );
+        setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),500);
         courseOptionsSent = true;
-      }, 500);
-
-    }, 1500);
+      },500);
+    },500);
   }
 }
 
@@ -178,7 +179,7 @@ inputEl.addEventListener('keydown', e=>{
 
 // mensagem inicial
 window.addEventListener('load', ()=>{
-  appendBubble('Oiie meu amor, tudo bem? eu me chamo Melissa.','bot');
+  appendBubble('Oiie meu amor, tudo bem?? eu me chamo Melissa.','bot');
 });
 </script>
 </body>
