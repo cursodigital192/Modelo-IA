@@ -54,12 +54,12 @@
     const messagesEl = document.getElementById('messages');
     const inputEl = document.getElementById('input');
     const sendBtn = document.getElementById('sendBtn');
-
     let totalExchanges = 0;
 
     function appendBubble(who='bot', extras={}) {
       const b = document.createElement('div');
       b.className = 'bubble ' + (who==='bot' ? 'from-bot' : 'from-me');
+
       if(extras.isAudio){
         const audioWrap = document.createElement('div');
         audioWrap.className = 'audio';
@@ -69,8 +69,15 @@
         play.addEventListener('click', () => {
           const utter = new SpeechSynthesisUtterance('Que ótimo, vou te passar 3 modelos sobre o curso, tá bom?');
           utter.lang = 'pt-BR';
+          // Humanizar: velocidade, tom e volume
+          utter.rate = 1;   // velocidade normal
+          utter.pitch = 1.2; // levemente mais aguda para soar feminina
+          utter.volume = 1; // volume total
           const voices = speechSynthesis.getVoices();
-          const v = voices.find(x=>/pt-BR|brazilian/i.test(x.lang)) || voices[0];
+          // Preferir vozes femininas brasileiras
+          const v = voices.find(x => /pt-BR|brazilian/i.test(x.lang) && /female/i.test(x.name)) 
+                    || voices.find(x => /pt-BR|brazilian/i.test(x.lang)) 
+                    || voices[0];
           if(v) utter.voice = v;
           speechSynthesis.speak(utter);
         });
@@ -79,6 +86,7 @@
       } else {
         b.innerHTML = extras.text;
       }
+
       messagesEl.appendChild(b);
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
