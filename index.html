@@ -3,34 +3,37 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Chat WhatsApp - Simulado</title>
+<title>Chat WhatsApp - Simulado Dark</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, Arial, sans-serif}
-  body{background:#e6f0ef;display:flex;align-items:center;justify-content:center;height:100vh}
-  .app{width:420px;height:680px;background:#ffffff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.12);overflow:hidden;display:flex;flex-direction:column}
-  .header{height:72px;padding:12px 14px;display:flex;align-items:center;border-bottom:1px solid #e6e6e6;position:sticky;top:0;background:#fff;z-index:10}
+  body{background:#121b22;display:flex;align-items:center;justify-content:center;height:100vh}
+  .app{width:100%;max-width:420px;height:calc(100vh - 20px);background:#1e2a33;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.3);display:flex;flex-direction:column;overflow:hidden}
+  .header{height:72px;padding:12px 14px;display:flex;align-items:center;border-bottom:1px solid #2c3e50;position:sticky;top:0;background:#1e2a33;z-index:10}
   .avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;margin-right:12px;flex-shrink:0;background:#ccc}
   .avatar img{width:100%;height:100%;object-fit:cover}
   .meta{flex:1}
-  .name{font-weight:600}
-  .status{font-size:12px;color:#6b6b6b}
-  .messages{flex:1;padding:20px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;background-image:linear-gradient(180deg, rgba(0,0,0,0.01), transparent)}
-  .bubble{max-width:78%;padding:10px 14px;border-radius:18px;line-height:1.35;position:relative}
-  .from-bot{background:#ffffff;border:1px solid #e6e6e6;align-self:flex-start;border-top-left-radius:6px}
-  .from-me{background:#dcf8c6;align-self:flex-end;border-top-right-radius:6px}
-  .composer{border-top:1px solid #e6e6e6;padding:10px;display:flex;flex-direction:column;gap:6px}
+  .name{font-weight:600;color:#fff}
+  .status{font-size:12px;color:#9aa0a6}
+  .messages{flex:1;padding:20px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;background:#121b22}
+  .messages::-webkit-scrollbar{width:6px}
+  .messages::-webkit-scrollbar-track{background:#121b22}
+  .messages::-webkit-scrollbar-thumb{background-color:#444;border-radius:3px}
+  .bubble{max-width:78%;padding:10px 14px;border-radius:18px;line-height:1.35;position:relative;word-wrap: break-word;}
+  .from-bot{background:#2c3e50;color:#fff;align-self:flex-start;border-top-left-radius:6px}
+  .from-me{background:#25d366;color:#000;align-self:flex-end;border-top-right-radius:6px}
+  .composer{border-top:1px solid #2c3e50;padding:10px;display:flex;flex-direction:column;gap:6px;background:#1e2a33}
   .row{display:flex;align-items:center;gap:8px}
-  .input{flex:1;background:#f7f7f7;border-radius:20px;padding:10px 14px;min-height:44px;display:flex;align-items:center}
+  .input{flex:1;background:#2c3e50;border-radius:20px;padding:10px 14px;min-height:44px;display:flex;align-items:center;color:#fff}
   .input[contenteditable]{outline:none}
   .btn{background:#25d366;border-radius:12px;padding:8px 12px;color:white;font-weight:600;border:none;cursor:pointer}
   .audio{display:flex;align-items:center;gap:8px}
-  .play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #ddd;cursor:pointer}
+  .play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #2c3e50;cursor:pointer;background:#25d366;color:white}
   .suggestions-container{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
   .suggestion-btn{background:#25d366;color:white;padding:6px 12px;border-radius:18px;border:none;cursor:pointer;font-weight:600;font-size:14px}
-  .checkout-link{display:block;margin-top:6px;color:#007aff;text-decoration:underline;cursor:pointer;font-weight:600;}
+  .checkout-link{display:block;margin-top:6px;color:#4ea5f7;text-decoration:underline;cursor:pointer;font-weight:600;}
   /* Digitando animado */
   .typing-bubble{display:flex;align-items:center;gap:4px;justify-content:flex-start;max-width:50px; height:24px;}
-  .dot{width:6px;height:6px;background:#666;border-radius:50%;animation:blink 1s infinite;animation-delay:0s;}
+  .dot{width:6px;height:6px;background:#fff;border-radius:50%;animation:blink 1s infinite;animation-delay:0s;}
   .dot:nth-child(2){animation-delay:0.2s;}
   .dot:nth-child(3){animation-delay:0.4s;}
   @keyframes blink{0%,80%,100%{opacity:0.2}40%{opacity:1}}
@@ -64,15 +67,11 @@ const messagesEl = document.getElementById('messages');
 const inputEl = document.getElementById('input');
 const sendBtn = document.getElementById('sendBtn');
 const suggestionsArea = document.getElementById('suggestionsArea');
-const statusEl = document.getElementById('status');
 
 let userResponded = false;
 let firstAutoResponseDone = false;
-let courseOptionsSent = false;
 
-// Função para mostrar "digitando..." com três pontinhos animados
 function showTyping(duration = 1200){
-  statusEl.innerText = 'online';
   const typingBubble = document.createElement('div');
   typingBubble.className = 'bubble from-bot';
   typingBubble.id = 'typingBubble';
@@ -98,14 +97,12 @@ function appendBubble(text, who='bot', extras={}){
     play.className='play';
     play.innerText='▶';
     const audioEl = new Audio(extras.src);
-
     play.addEventListener('click', ()=>{
       audioEl.play();
       play.style.pointerEvents='none';
       play.style.opacity='0.6';
       appendSuggestions(['Não, quero comprar o curso']);
     });
-
     audioWrap.appendChild(play);
     b.appendChild(audioWrap);
   } else if(extras.isCheckout){
@@ -166,7 +163,6 @@ async function handleResponse(text){
       'bot'
     );
     setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),500);
-    courseOptionsSent = true;
   }
 }
 
@@ -174,8 +170,8 @@ function sendMessage(){
   const text = inputEl.innerText.trim();
   if(!text) return;
   appendBubble(text,'me');
-  inputEl.value = '';
-  inputEl.innerText = '';
+  inputEl.value='';
+  inputEl.innerText='';
 
   if(!userResponded){
     userResponded = true;
