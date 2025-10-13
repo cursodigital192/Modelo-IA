@@ -5,40 +5,29 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Chat WhatsApp - Simulado (IA)</title>
   <style>
-    /* Reset rápido */
     *{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, Arial, sans-serif}
     body{background:#e6f0ef;display:flex;align-items:center;justify-content:center;height:100vh}
     .app{width:420px;height:780px;background:#ffffff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.12);overflow:hidden;display:flex;flex-direction:column}
-
-    /* Header estilo WhatsApp */
     .header{height:72px;padding:12px 14px;display:flex;align-items:center;border-bottom:1px solid #e6e6e6}
     .avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;margin-right:12px;flex-shrink:0;background:#ccc}
     .avatar img{width:100%;height:100%;object-fit:cover}
     .meta{flex:1}
     .name{font-weight:600}
     .status{font-size:12px;color:#6b6b6b}
-
-    /* Mensagens */
     .messages{flex:1;padding:20px;display:flex;flex-direction:column;gap:12px;overflow:auto;background-image:linear-gradient(180deg, rgba(0,0,0,0.01), transparent)}
     .bubble{max-width:78%;padding:10px 14px;border-radius:18px;line-height:1.35}
     .from-bot{background:#ffffff;border:1px solid #e6e6e6;align-self:flex-start;border-top-left-radius:6px}
     .from-me{background:#dcf8c6;align-self:flex-end;border-top-right-radius:6px}
     .bubble small{display:block;margin-top:6px;font-size:11px;color:#666}
-
     .composer{height:88px;border-top:1px solid #e6e6e6;padding:10px;display:flex;flex-direction:column;gap:6px}
     .row{display:flex;align-items:center;gap:8px}
     .input{flex:1;background:#f7f7f7;border-radius:20px;padding:10px 14px;min-height:44px;display:flex;align-items:center}
     .input[contenteditable]{outline:none}
     .btn{background:#25d366;border-radius:12px;padding:8px 12px;color:white;font-weight:600;border:none;cursor:pointer}
     .link-btn{background:transparent;color:#007aff;border:1px solid #e0e0e0;padding:6px 8px;border-radius:8px}
-
     .typing{font-size:12px;color:#666;margin-left:6px}
-
-    /* small audio bubble */
     .audio{display:flex;align-items:center;gap:8px}
     .play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #ddd}
-
-    /* Promo button */
     .promo{background:#fff8e6;border:1px solid #ffd28a;padding:10px;border-radius:12px}
     .promo a{display:inline-block;margin-top:8px;background:#ff8c00;padding:8px 12px;color:#fff;border-radius:8px;text-decoration:none}
   </style>
@@ -47,24 +36,19 @@
   <div class="app">
     <div class="header">
       <div class="avatar" id="avatar">
-        <!-- Foto de perfil padrão -->
-        <img src="https://osegredo.com.br/wp-content/uploads/2024/01/Emily-Pellegrini-1.jpg" alt="avatar">
+        <img src="https://osegredo.com.br/wp-content/uploads/2024/01/Emily-Pellegrini-1.jpg" alt="Melissa Castro">
       </div>
       <div class="meta">
         <div class="name">Melissa Castro</div>
         <div class="status" id="status">online</div>
       </div>
-      <button class="link-btn" id="uploadBtn">Enviar foto</button>
-      <input type="file" id="fileInput" accept="image/*" style="display:none">
     </div>
 
-    <div class="messages" id="messages">
-      <!-- mensagens aparecerão aqui -->
-    </div>
+    <div class="messages" id="messages"></div>
 
     <div class="composer">
       <div class="row">
-        <div class="input" id="input" contenteditable="true" role="textbox" aria-multiline="true" placeholder="Escreva uma mensagem...">Oi, tudo bem?</div>
+        <div class="input" id="input" contenteditable="true" role="textbox" aria-multiline="true">Oi, tudo bem?</div>
         <button class="btn" id="sendBtn">Enviar</button>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center">
@@ -75,114 +59,90 @@
   </div>
 
   <script>
-    // ---------- Configurações que você pode alterar ----------
-    // Endereço do seu backend que conecta com a IA (ex: seu servidor Node/Express)
-    const AI_ENDPOINT = '/api/ai'; // substitua se necessário
-
-    // link de compra que será enviado automaticamente ao final
+    const AI_ENDPOINT = '/api/ai';
     const PROMO_LINK = 'https://go.perfectpay.com.br/PPU38CQ08HP';
-
-    // Quantas mensagens trocar antes de disparar a oferta automaticamente
     const MESSAGES_BEFORE_PROMO = 4;
-
-    // se true, usa a API de TTS do navegador (speechSynthesis). Se quiser voz mais natural, integre ElevenLabs/Play.ht no servidor.
     const USE_BROWSER_TTS = true;
-
-    // ---------------------------------------------------------
 
     const messagesEl = document.getElementById('messages');
     const inputEl = document.getElementById('input');
     const sendBtn = document.getElementById('sendBtn');
     const typingIndicator = document.getElementById('typingIndicator');
-    const fileInput = document.getElementById('fileInput');
-    const uploadBtn = document.getElementById('uploadBtn');
     const demoPromo = document.getElementById('demoPromo');
 
-    let history = []; // histórico de mensagens
+    let history = [];
     let totalExchanges = 0;
 
     function appendBubble(text, who='bot', extras={}) {
       const b = document.createElement('div');
-      b.className = 'bubble ' + (who === 'bot' ? 'from-bot' : 'from-me');
-      if (extras.isPromo) b.classList.add('promo');
-      if (extras.isAudio) {
-        // criar bubble com áudio
+      b.className = 'bubble ' + (who==='bot' ? 'from-bot' : 'from-me');
+      if(extras.isPromo) b.classList.add('promo');
+      if(extras.isAudio){
         const audioWrap = document.createElement('div');
         audioWrap.className = 'audio';
-        const play = document.createElement('div');
-        play.className = 'play';
-        play.innerText = '▶';
-        const info = document.createElement('div');
-        info.innerText = extras.caption || 'Áudio';
-        audioWrap.appendChild(play);
-        audioWrap.appendChild(info);
+        const play = document.createElement('div'); play.className='play'; play.innerText='▶';
+        const info = document.createElement('div'); info.innerText = extras.caption || 'Áudio';
+        audioWrap.appendChild(play); audioWrap.appendChild(info);
         b.appendChild(audioWrap);
         const audioEl = new Audio(extras.src);
-        play.addEventListener('click', () => audioEl.play());
-      } else {
-        b.innerHTML = text.replace(/\n/g, '<br>');
-      }
-
+        play.addEventListener('click', ()=>audioEl.play());
+      } else { b.innerHTML = text.replace(/\n/g,'<br>'); }
       messagesEl.appendChild(b);
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
-    function setTyping(on) {
-      typingIndicator.innerText = on ? 'digitando...' : '';
-    }
+    function setTyping(on){ typingIndicator.innerText = on ? 'digitando...' : ''; }
 
     async function sendMessage() {
       const text = inputEl.innerText.trim();
-      if (!text) return;
-      appendBubble(text, 'me');
-      history.push({ role: 'user', content: text });
-      inputEl.innerText = '';
+      if(!text) return;
+      appendBubble(text,'me');
+      history.push({role:'user',content:text});
+      inputEl.innerText='';
       totalExchanges++;
-
       setTyping(true);
-      try {
-        const res = await fetch(AI_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text, history })
+      try{
+        const res = await fetch(AI_ENDPOINT,{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({message:text,history})
         });
-        if (!res.ok) throw new Error('Resposta inválida do servidor');
-        const data = await res.json(); // espera { reply: 'texto...' }
+        const data = await res.json();
         const reply = data.reply || 'Desculpe, não entendi.';
-        history.push({ role: 'assistant', content: reply });
-
-        // exibir texto
-        appendBubble(reply, 'bot');
-
-        // gerar áudio TTS (navegador) e exibir como bubble de áudio
-        if (USE_BROWSER_TTS) {
-          // conversão em blob via SpeechSynthesis não é padronizada; em vez disso, criamos áudio dinamicamente com SpeechSynthesis
-          speakAndAttach(reply);
-        }
-
-        // se atingiu o número de trocas, envia a promo automaticamente
-        if (totalExchanges >= MESSAGES_BEFORE_PROMO) {
-          setTimeout(() => sendPromo(), 800);
-        }
-
-      } catch (e) {
+        history.push({role:'assistant',content:reply});
+        appendBubble(reply,'bot');
+        if(USE_BROWSER_TTS) speakAndAttach(reply);
+        if(totalExchanges >= MESSAGES_BEFORE_PROMO) setTimeout(()=>sendPromo(),800);
+      } catch(e){
         console.error(e);
-        appendBubble('Ocorreu um erro ao conectar com a IA.', 'bot');
-      } finally {
-        setTyping(false);
-      }
+        appendBubble('Ocorreu um erro ao conectar com a IA.','bot');
+      } finally{ setTyping(false); }
     }
 
-    // envia promoção (texto + link) como mensagem do bot
-    function sendPromo() {
+    function sendPromo(){
       const promoHtml = `Quer aprender a faturar com uma modelo IA? adquira nosso curso agora mesmo, do zero ao avançado e escale uma operação de sucesso.<br><a href="${PROMO_LINK}" target="_blank">Comprar agora</a>`;
-      appendBubble(promoHtml, 'bot', { isPromo: true });
-      // também enviar como mensagem final no histórico
-      history.push({ role: 'assistant', content: promoHtml });
+      appendBubble(promoHtml,'bot',{isPromo:true});
+      history.push({role:'assistant',content:promoHtml});
     }
 
-    // Função simples que usa Web Speech API para falar e também criar um "áudio" tocável
-    function speakAndAttach(text) {
-     
-::contentReference[oaicite:10]{index=10}
- 
+    function speakAndAttach(text){
+      if(!('speechSynthesis' in window)) return;
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang='pt-BR';
+      const voices = speechSynthesis.getVoices();
+      const v = voices.find(x=>/pt-BR|brazilian/i.test(x.lang)) || voices[0];
+      if(v) utter.voice=v;
+      utter.onstart = ()=> appendBubble('Áudio enviado','bot',{isAudio:true,caption:'Mensagem de voz',src:''});
+      speechSynthesis.speak(utter);
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    inputEl.addEventListener('keydown', e => { if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); } });
+    demoPromo.addEventListener('click', sendPromo);
+
+    window.addEventListener('load', ()=>{
+      appendBubble('Oi 👋, eu sou a Melissa Castro. Posso te ajudar a aprender a faturar com modelos IA. Como posso te ajudar hoje?','bot');
+    });
+  </script>
+</body>
+</html>
