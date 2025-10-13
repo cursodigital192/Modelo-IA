@@ -70,7 +70,13 @@ function appendBubble(text, who='bot', extras={}){
     play.className='play';
     play.innerText='▶';
     const audioEl = new Audio(extras.src);
-    play.addEventListener('click', ()=>audioEl.play());
+    play.addEventListener('click', ()=>{
+      audioEl.play();
+      audioEl.onended = ()=>{
+        // quando terminar o áudio, envia a mensagem seguinte
+        appendBubble('Ou você prefere aprender a criar uma modelo do job e faturar com isso?','bot');
+      };
+    });
     audioWrap.appendChild(play);
     b.appendChild(audioWrap);
   } else {
@@ -104,7 +110,7 @@ inputEl.addEventListener('keydown', e=>{
 
 // mensagem inicial
 window.addEventListener('load', ()=>{
-  appendBubble('Oiie meu amor, tudo bem? eu me chamo Melissa.','bot');
+  appendBubble('Oiie meu amor, tudo bem?? eu me chamo Melissa.','bot');
 });
 </script>
 </body>
