@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-<title>Chat WhatsApp - Simulado (IA)</title>
+<title>Chat WhatsApp - Simulado</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, Arial, sans-serif}
   body{background:#121b22;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;padding:0}
   .app{
     width:100%;
     max-width:420px;
-    height:calc(100vh - 10px); /* Altura responsiva */
+    height:100%;
     background:#1e2a33;
     border-radius:16px;
     box-shadow:0 10px 30px rgba(0,0,0,0.3);
@@ -61,12 +61,31 @@
   .input{flex:1;background:#2c3e50;border-radius:20px;padding:10px 14px;min-height:44px;display:flex;align-items:center;color:#fff}
   .input[contenteditable]{outline:none}
   .btn{background:#25d366;border-radius:12px;padding:8px 12px;color:white;font-weight:600;border:none;cursor:pointer}
-  .audio{display:flex;align-items:center;gap:8px}
-  .play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #25d366;cursor:pointer;color:#fff;background:#25d366}
+  .audio{display:flex;align-items:center;justify-content:flex-start}
+  .play{
+    width:48px;
+    height:36px;
+    border-radius:18px;
+    background:#25d366;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:opacity 0.2s;
+    position:relative;
+  }
+  .play:active{opacity:0.7;}
+  .play::after{
+    content:'';
+    border-style: solid;
+    border-width: 8px 0 8px 14px;
+    border-color: transparent transparent transparent #fff;
+    display:block;
+    margin-left:2px;
+  }
   .suggestions-container{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
   .suggestion-btn{background:#25d366;color:white;padding:6px 12px;border-radius:18px;border:none;cursor:pointer;font-weight:600;font-size:14px}
   .checkout-link{display:block;margin-top:6px;color:#4ea5f7;text-decoration:underline;cursor:pointer;font-weight:600;}
-  /* Digitando animado */
   .typing-bubble{display:flex;align-items:center;gap:4px;justify-content:flex-start;max-width:50px; height:24px;}
   .dot{width:6px;height:6px;background:#fff;border-radius:50%;animation:blink 1s infinite;animation-delay:0s;}
   .dot:nth-child(2){animation-delay:0.2s;}
@@ -102,55 +121,49 @@ const messagesEl = document.getElementById('messages');
 const inputEl = document.getElementById('input');
 const sendBtn = document.getElementById('sendBtn');
 const suggestionsArea = document.getElementById('suggestionsArea');
-const statusEl = document.getElementById('status');
 
-let userResponded = false;
-let firstAutoResponseDone = false;
-let courseOptionsSent = false;
+let userResponded=false;
+let firstAutoResponseDone=false;
 
-// Função para mostrar "digitando..." com três pontinhos animados
-function showTyping(duration = 1200){
-  statusEl.innerText = 'digitando...';
+// Função para mostrar "digitando..."
+function showTyping(duration=1200){
   const typingBubble = document.createElement('div');
-  typingBubble.className = 'bubble from-bot';
-  typingBubble.id = 'typingBubble';
-  typingBubble.innerHTML = `<div class="typing-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  typingBubble.className='bubble from-bot';
+  typingBubble.id='typingBubble';
+  typingBubble.innerHTML='<div class="typing-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
   messagesEl.appendChild(typingBubble);
   messagesEl.scrollTop = messagesEl.scrollHeight;
   return new Promise(resolve=>{
     setTimeout(()=>{
       typingBubble.remove();
-      statusEl.innerText = 'online';
       resolve();
     }, duration);
   });
 }
 
 function appendBubble(text, who='bot', extras={}){
-  const b = document.createElement('div');
-  b.className = 'bubble ' + (who==='bot' ? 'from-bot' : 'from-me');
+  const b=document.createElement('div');
+  b.className='bubble '+(who==='bot'?'from-bot':'from-me');
 
   if(extras.isAudio){
-    const audioWrap = document.createElement('div');
-    audioWrap.className = 'audio';
-    const play = document.createElement('div');
+    const audioWrap=document.createElement('div');
+    audioWrap.className='audio';
+    const play=document.createElement('div');
     play.className='play';
-    const audioEl = new Audio(extras.src);
-
+    const audioEl=new Audio(extras.src);
     play.addEventListener('click', ()=>{
       audioEl.play();
       play.style.pointerEvents='none';
       play.style.opacity='0.6';
       appendSuggestions(['Não, quero comprar o curso']);
     });
-
     audioWrap.appendChild(play);
     b.appendChild(audioWrap);
   } else if(extras.isCheckout){
-    b.innerHTML = `${text}<a class="checkout-link" href="${extras.link}" target="_blank">Clique aqui para comprar</a>`;
+    b.innerHTML=`${text}<a class="checkout-link" href="${extras.link}" target="_blank">Clique aqui para comprar</a>`;
     appendSuggestions(['Escolher outras opções']);
   } else {
-    b.innerHTML = text.replace(/\n/g,'<br>');
+    b.innerHTML=text.replace(/\n/g,'<br>');
   }
 
   messagesEl.appendChild(b);
@@ -160,7 +173,7 @@ function appendBubble(text, who='bot', extras={}){
 function appendSuggestions(options){
   suggestionsArea.innerHTML='';
   options.forEach(opt=>{
-    const btn = document.createElement('button');
+    const btn=document.createElement('button');
     btn.className='suggestion-btn';
     btn.innerText=opt;
     btn.addEventListener('click', async ()=>{
@@ -174,20 +187,20 @@ function appendSuggestions(options){
 }
 
 async function handleResponse(text){
-  const lowerText = text.toLowerCase();
+  const lower=text.toLowerCase();
 
-  if(lowerText==='escolher outras opções'){
+  if(lower==='escolher outras opções'){
     await showTyping();
     appendBubble('Ah perfeito meu amor, qual você gostaria então. O Hot Starter, Hot Essential ou Hot Founder?','bot');
     setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),500);
     return;
   }
 
-  if(['hot starter','hot essential','hot founder'].includes(lowerText)){
+  if(['hot starter','hot essential','hot founder'].includes(lower)){
     let link='';
-    if(lowerText==='hot starter') link='https://go.perfectpay.com.br/PPU38CQ08HP';
-    else if(lowerText==='hot essential') link='https://go.perfectpay.com.br/PPU38CQ08I2';
-    else if(lowerText==='hot founder') link='https://go.perfectpay.com.br/PPU38CQ08I3';
+    if(lower==='hot starter') link='https://go.perfectpay.com.br/PPU38CQ08HP';
+    else if(lower==='hot essential') link='https://go.perfectpay.com.br/PPU38CQ08I2';
+    else if(lower==='hot founder') link='https://go.perfectpay.com.br/PPU38CQ08I3';
 
     await showTyping();
     appendBubble('Ótima escolha, vou te enviar o link checkout para você iniciar suas operações agora mesmo!','bot',{isCheckout:true, link:link});
@@ -195,34 +208,29 @@ async function handleResponse(text){
   }
 
   if(!firstAutoResponseDone){
-    firstAutoResponseDone = true;
+    firstAutoResponseDone=true;
     await showTyping();
     appendBubble('Ótimo, vou te enviar alguns detalhes sobre o curso','bot');
     await showTyping();
     appendBubble(
-      'Temos 3 modelos de curso, sendo o Hot Starter, onde você vai aprender o básico como criar sua própria modelo do job; o Hot Essential, onde você aprenderá do básico ao avançado e receberá todos os links e dicas valiosas; e, por fim, para uma estrutura sólida e escalável, temos o Hot Founder, onde você aprenderá tudo inclusive criar sua modelo com IA. Qual dos 3 você tem interesse?',
-      'bot'
+      'Temos 3 modelos de curso, sendo o Hot Starter, onde você vai aprender o básico; o Hot Essential, do básico ao avançado; e o Hot Founder, tudo incluindo criar sua modelo com IA. Qual dos 3 você tem interesse?','bot'
     );
     setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),500);
-    courseOptionsSent = true;
   }
 }
 
 function sendMessage(){
-  const text = inputEl.innerText.trim();
+  const text=inputEl.innerText.trim();
   if(!text) return;
   appendBubble(text,'me');
-  inputEl.value = '';
-  inputEl.innerText = '';
+  inputEl.innerText='';
 
   if(!userResponded){
-    userResponded = true;
+    userResponded=true;
     setTimeout(()=>{
       appendBubble(null,'bot',{isAudio:true, src:'https://s31.aconvert.com/convert/p3r68-cdx67/8kair-dvode.mp3'});
-    }, 800);
-  } else {
-    handleResponse(text);
-  }
+    },800);
+  } else handleResponse(text);
 }
 
 sendBtn.addEventListener('click', sendMessage);
