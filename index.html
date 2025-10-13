@@ -1,58 +1,200 @@
-<script>
-  const messages = document.getElementById("messages");
-  const userInput = document.getElementById("userInput");
-  const sendBtn = document.getElementById("sendBtn");
-
-  let step = 0; // Controla o fluxo do chat
-
-  function appendMessage(text, type) {
-    const msg = document.createElement("div");
-    msg.classList.add("message", type);
-    msg.innerHTML = text;
-    messages.appendChild(msg);
-    messages.scrollTop = messages.scrollHeight;
-  }
-
-  // Mensagem inicial automática
-  window.addEventListener("load", () => {
-    appendMessage("Oi 👋, eu sou a Melissa Castro. Tudo bem?", "received");
-  });
-
-  sendBtn.addEventListener("click", sendMessage);
-  userInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      sendMessage();
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat WhatsApp - Melissa Castro</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background-color: #ece5dd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
-  });
 
-  function sendMessage() {
-    const text = userInput.value.trim();
-    if (text === "") return;
-    appendMessage(text, "sent");
-    userInput.value = "";
+    .container {
+      width: 400px;
+      height: 700px;
+      background-color: #fff;
+      border-radius: 15px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
 
-    step++;
+    .header {
+      background-color: #075e54;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      padding: 10px;
+    }
 
-    if (step === 1) {
-      // Primeira resposta automática
-      setTimeout(() => {
-        appendMessage("Posso te ajudar a faturar com modelo do job, você tem interesse?", "received");
-      }, 1000);
-    } else if (step === 2) {
-      // Segunda resposta automática
-      setTimeout(() => {
-        appendMessage("Ótimo, vou te falar alguns pontos sobre nossos cursos...", "received");
-      }, 1000);
-    } else if (step === 3) {
-      // Terceira resposta automática com cursos numerados
-      setTimeout(() => {
-        appendMessage(`Nós temos 3 modelos de cursos:<br>
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .header-info h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .header-info p {
+      margin: 0;
+      font-size: 12px;
+      color: #dcdcdc;
+    }
+
+    .messages {
+      flex: 1;
+      padding: 10px;
+      background-image: url("https://i.imgur.com/fu1UDuW.png");
+      background-size: cover;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message {
+      max-width: 80%;
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      border-radius: 7.5px;
+      line-height: 1.4;
+      font-size: 14px;
+    }
+
+    .received {
+      background-color: #fff;
+      align-self: flex-start;
+    }
+
+    .sent {
+      background-color: #dcf8c6;
+      align-self: flex-end;
+    }
+
+    .input-area {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background-color: #f0f0f0;
+    }
+
+    .input-area input {
+      flex: 1;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 15px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .input-area button {
+      margin-left: 10px;
+      background-color: #25d366;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="avatar">
+        <img src="https://files.oaiusercontent.com/file-000000006b60620eab87c0287d8a4cf1/SnapInsta.to_473620269_1155812946101091_5036196859446970365_n.jpg" alt="Melissa Castro" />
+      </div>
+      <div class="header-info">
+        <h2>Melissa Castro</h2>
+        <p>online</p>
+      </div>
+    </div>
+
+    <div class="messages" id="messages"></div>
+
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Digite sua mensagem..." />
+      <button id="sendBtn">➤</button>
+    </div>
+  </div>
+
+  <script>
+    const messages = document.getElementById("messages");
+    const userInput = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    let step = 0; // Controla o fluxo do chat
+
+    function appendMessage(text, type) {
+      const msg = document.createElement("div");
+      msg.classList.add("message", type);
+      msg.innerHTML = text;
+      messages.appendChild(msg);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    // Mensagem inicial automática
+    window.addEventListener("load", () => {
+      appendMessage("Oi 👋, eu sou a Melissa Castro. Tudo bem?", "received");
+    });
+
+    sendBtn.addEventListener("click", sendMessage);
+    userInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    function sendMessage() {
+      const text = userInput.value.trim();
+      if (text === "") return;
+      appendMessage(text, "sent");
+      userInput.value = "";
+      step++;
+
+      if (step === 1) {
+        // Primeira resposta automática
+        setTimeout(() => {
+          appendMessage("Posso te ajudar a faturar com modelo do job, você tem interesse?", "received");
+        }, 1000);
+      } else if (step === 2) {
+        // Segunda resposta automática
+        setTimeout(() => {
+          appendMessage("Ótimo, vou te falar alguns pontos sobre nossos cursos...", "received");
+        }, 1000);
+      } else if (step === 3) {
+        // Terceira resposta automática com cursos numerados
+        setTimeout(() => {
+          appendMessage(`Nós temos 3 modelos de cursos:<br>
 1️⃣ Hot Starter<br>
 2️⃣ Hot Essential<br>
 3️⃣ Hot Founder<br>
 Qual gostaria de saber mais?`, "received");
-      }, 1000);
+        }, 1000);
+      }
     }
-  }
-</script>
+  </script>
+</body>
+</html>
