@@ -61,7 +61,6 @@ const suggestionsArea = document.getElementById('suggestionsArea');
 
 let userResponded = false;
 let firstAutoResponseDone = false;
-let courseOptionsSent = false;
 
 // função para criar bubble
 function appendBubble(text, who='bot', extras={}){
@@ -119,7 +118,6 @@ function handleResponse(text){
   const lowerText = text.toLowerCase();
 
   if(lowerText==='escolher outras opções'){
-    // volta as opções de curso
     appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']);
     return;
   }
@@ -136,7 +134,7 @@ function handleResponse(text){
     return;
   }
 
-  // caso seja qualquer outra resposta
+  // qualquer outra resposta do usuário
   if(!firstAutoResponseDone){
     firstAutoResponseDone = true;
     setTimeout(()=>{
@@ -147,7 +145,6 @@ function handleResponse(text){
           'bot'
         );
         setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),500);
-        courseOptionsSent = true;
       },500);
     },500);
   }
@@ -163,7 +160,7 @@ function sendMessage(){
 
   if(!userResponded){
     userResponded = true;
-    setTimeout(()=>{ 
+    setTimeout(()=>{
       appendBubble(null,'bot',{isAudio:true, src:'https://s31.aconvert.com/convert/p3r68-cdx67/8kair-dvode.mp3'});
     }, 800);
   } else {
@@ -179,7 +176,7 @@ inputEl.addEventListener('keydown', e=>{
 
 // mensagem inicial
 window.addEventListener('load', ()=>{
-  appendBubble('Oiie meu amor, tudo bem? eu me chamo Melissa.','bot');
+  appendBubble('Oiie meu amor, tudo bem?? eu me chamo Melissa.','bot');
 });
 </script>
 </body>
