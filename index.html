@@ -15,7 +15,7 @@
   .name{font-weight:600}
   .status{font-size:12px;color:#6b6b6b}
   .messages{flex:1;padding:20px;display:flex;flex-direction:column;gap:12px;overflow:auto;background-image:linear-gradient(180deg, rgba(0,0,0,0.01), transparent)}
-  .bubble{max-width:78%;padding:10px 14px;border-radius:18px;line-height:1.35}
+  .bubble{max-width:78%;padding:10px 14px;border-radius:18px;line-height:1.35;position:relative}
   .from-bot{background:#ffffff;border:1px solid #e6e6e6;align-self:flex-start;border-top-left-radius:6px}
   .from-me{background:#dcf8c6;align-self:flex-end;border-top-right-radius:6px}
   .composer{height:88px;border-top:1px solid #e6e6e6;padding:10px;display:flex;flex-direction:column;gap:6px}
@@ -25,6 +25,8 @@
   .btn{background:#25d366;border-radius:12px;padding:8px 12px;color:white;font-weight:600;border:none;cursor:pointer}
   .audio{display:flex;align-items:center;gap:8px}
   .play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #ddd;cursor:pointer}
+  .suggestions{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+  .suggestion-btn{background:#25d366;color:white;padding:6px 12px;border-radius:18px;border:none;cursor:pointer;font-weight:600;font-size:14px}
 </style>
 </head>
 <body>
@@ -71,11 +73,10 @@ function appendBubble(text, who='bot', extras={}){
 
     play.addEventListener('click', ()=>{
       audioEl.play();
-      // adiciona a próxima mensagem **assim que o usuário clicar**
-      appendBubble('Ou você prefere aprender a criar uma modelo do job e faturar com isso?','bot');
-      // desativa o botão de play após clique
       play.style.pointerEvents='none';
       play.style.opacity='0.6';
+      // adicionar sugestão de mensagem após clicar no play
+      appendSuggestions(['Não, quero comprar o curso']);
     });
 
     audioWrap.appendChild(play);
@@ -86,6 +87,32 @@ function appendBubble(text, who='bot', extras={}){
 
   messagesEl.appendChild(b);
   messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+// função para criar sugestões de resposta
+function appendSuggestions(options){
+  const container = document.createElement('div');
+  container.className='suggestions';
+  options.forEach(opt=>{
+    const btn = document.createElement('button');
+    btn.className='suggestion-btn';
+    btn.innerText=opt;
+    btn.addEventListener('click', ()=>{
+      appendBubble(opt,'me');
+      handleResponse(opt);
+      container.remove();
+    });
+    container.appendChild(btn);
+  });
+  messagesEl.appendChild(container);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+// função para lidar com qualquer resposta
+function handleResponse(text){
+  setTimeout(()=>{
+    appendBubble('Ótimo, vou te enviar alguns detalhes sobre o curso','bot');
+  },500);
 }
 
 // enviar mensagem do usuário
@@ -101,6 +128,8 @@ function sendMessage(){
     setTimeout(()=>{ 
       appendBubble(null,'bot',{isAudio:true, src:'https://s31.aconvert.com/convert/p3r68-cdx67/8kair-dvode.mp3'});
     }, 800);
+  } else {
+    handleResponse(text);
   }
 }
 
