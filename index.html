@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Chat WhatsApp - Simulado (IA)</title>
+  <title>Chat WhatsApp - Melissa</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, Arial, sans-serif}
     body{background:#e6f0ef;display:flex;align-items:center;justify-content:center;height:100vh}
@@ -16,7 +16,7 @@
     .status{font-size:12px;color:#6b6b6b}
     .messages{flex:1;padding:20px;display:flex;flex-direction:column;gap:12px;overflow:auto;background-image:linear-gradient(180deg, rgba(0,0,0,0.01), transparent)}
     .bubble{max-width:78%;padding:10px 14px;border-radius:18px;line-height:1.35}
-    .from-bot{background:#ffffff;border:1px solid #e6e6e6;align-self:flex-start;border-top-left-radius:6px}
+    .from-bot{background:#ffffff;border:1px solid #e6e6e6;align-self:flex-start;border-top-left-radius:6px;position:relative}
     .from-me{background:#dcf8c6;align-self:flex-end;border-top-right-radius:6px}
     .composer{height:88px;border-top:1px solid #e6e6e6;padding:10px;display:flex;flex-direction:column;gap:6px}
     .row{display:flex;align-items:center;gap:8px}
@@ -24,8 +24,8 @@
     .input[contenteditable]{outline:none}
     .btn{background:#25d366;border-radius:12px;padding:8px 12px;color:white;font-weight:600;border:none;cursor:pointer}
     .typing{font-size:12px;color:#666;margin-left:6px}
-    .audio{display:flex;align-items:center;gap:8px}
-    .play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #ddd;cursor:pointer}
+    .audio{display:flex;align-items:center;gap:8px;margin-top:5px}
+    .play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #ddd;cursor:pointer;background:#25d366;color:#fff;font-weight:600}
   </style>
 </head>
 <body>
@@ -44,8 +44,11 @@
 
     <div class="composer">
       <div class="row">
-        <div class="input" id="input" contenteditable="true" role="textbox" aria-multiline="true">Oi, tudo bem?</div>
+        <div class="input" id="input" contenteditable="true" role="textbox" aria-multiline="true" placeholder="Escreva uma mensagem..."></div>
         <button class="btn" id="sendBtn">Enviar</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <small class="typing" id="typingIndicator"></small>
       </div>
     </div>
   </div>
@@ -54,63 +57,69 @@
     const messagesEl = document.getElementById('messages');
     const inputEl = document.getElementById('input');
     const sendBtn = document.getElementById('sendBtn');
-    let totalExchanges = 0;
 
-    function appendBubble(who='bot', extras={}) {
+    let selectedVoice = null;
+    speechSynthesis.onvoiceschanged = () => {
+      const voices = speechSynthesis.getVoices();
+      selectedVoice = voices.find(v => /pt-BR|brazilian/i.test(v.lang) && /female/i.test(v.name))
+                      || voices.find(v => /pt-BR|brazilian/i.test(v.lang))
+                      || voices[0];
+    };
+
+    function appendBubble(text, who='bot', isAudio=false) {
       const b = document.createElement('div');
       b.className = 'bubble ' + (who==='bot' ? 'from-bot' : 'from-me');
 
-      if(extras.isAudio){
+      if(isAudio){
         const audioWrap = document.createElement('div');
-        audioWrap.className = 'audio';
+        audioWrap.className='audio';
         const play = document.createElement('div');
-        play.className = 'play';
-        play.innerText = '▶';
-        play.addEventListener('click', () => {
-          const utter = new SpeechSynthesisUtterance('Que ótimo, vou te passar 3 modelos sobre o curso, tá bom?');
-          utter.lang = 'pt-BR';
-          // Humanizar: velocidade, tom e volume
-          utter.rate = 1;   // velocidade normal
-          utter.pitch = 1.2; // levemente mais aguda para soar feminina
-          utter.volume = 1; // volume total
-          const voices = speechSynthesis.getVoices();
-          // Preferir vozes femininas brasileiras
-          const v = voices.find(x => /pt-BR|brazilian/i.test(x.lang) && /female/i.test(x.name)) 
-                    || voices.find(x => /pt-BR|brazilian/i.test(x.lang)) 
-                    || voices[0];
-          if(v) utter.voice = v;
-          speechSynthesis.speak(utter);
-        });
+        play.className='play';
+        play.innerText='▶';
         audioWrap.appendChild(play);
         b.appendChild(audioWrap);
+
+        play.addEventListener('click', ()=>{
+          if(!selectedVoice) return alert('Voz ainda não disponível, recarregue a página.');
+          const utter = new SpeechSynthesisUtterance('Que ótimo, vou te passar 3 modelos sobre o curso, tá bom?');
+          utter.voice = selectedVoice;
+          utter.lang = 'pt-BR';
+          utter.pitch = 1.2;
+          utter.rate = 1;
+          speechSynthesis.speak(utter);
+        });
       } else {
-        b.innerHTML = extras.text;
+        b.innerHTML = text.replace(/\n/g,'<br>');
       }
 
       messagesEl.appendChild(b);
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
-    function sendMessage() {
+    function setTyping(on){ document.getElementById('typingIndicator').innerText = on ? 'digitando...' : ''; }
+
+    sendBtn.addEventListener('click', ()=>{
       const text = inputEl.innerText.trim();
       if(!text) return;
-      appendBubble('me', {text});
-      inputEl.innerText = '';
-      totalExchanges++;
-      appendBubble('bot', {isAudio:true});
-    }
+      appendBubble(text,'me');
+      inputEl.innerText='';
+      setTyping(true);
+      setTimeout(()=>{
+        appendBubble('', 'bot', true); // áudio clicável
+        setTyping(false);
+      },500);
+    });
 
-    sendBtn.addEventListener('click', sendMessage);
     inputEl.addEventListener('keydown', (e)=>{
       if(e.key==='Enter' && !e.shiftKey){
         e.preventDefault();
-        sendMessage();
+        sendBtn.click();
       }
     });
 
-    // Saudação inicial
+    // Mensagem inicial
     window.addEventListener('load', ()=>{
-      appendBubble('bot', {text:'Oiie meu amor, tudo bem? Eu me chamo Melissa.'});
+      appendBubble('Oiie meu amor, tudo bem?? eu me chamo Melissa.','bot');
     });
   </script>
 </body>
