@@ -5,32 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Iniciar conversa no WhatsApp</title>
   <style>
+    /* Reset básico e fonte */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: "Segoe UI", Arial, sans-serif;
-      text-align: center;
-      background-color: #fff;
-      color: #111;
-      padding-top: 80px;
+      background-color: #ffffff;
+      color: #111111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
     }
 
     .container {
       max-width: 400px;
-      margin: auto;
+      width: 100%;
+      text-align: center;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 40px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      background-color: #fafafa;
     }
 
     .numero {
-      font-size: 14px;
-      color: #444;
-      margin-bottom: 20px;
+      font-size: 16px;
+      color: #444444;
+      margin-bottom: 25px;
+    }
+
+    .numero strong {
+      color: #111111;
     }
 
     .botao {
       background-color: #25D366;
-      color: white;
+      color: #ffffff;
       border: none;
-      border-radius: 20px;
-      padding: 10px 30px;
-      font-size: 14px;
+      border-radius: 25px;
+      padding: 12px 35px;
+      font-size: 16px;
       cursor: pointer;
       transition: background 0.3s;
     }
@@ -40,34 +60,54 @@
     }
 
     .links {
-      margin-top: 40px;
-      font-size: 13px;
-      color: #555;
+      margin-top: 35px;
+      font-size: 14px;
+      color: #555555;
     }
 
-    .links a {
-      display: block;
+    .links p {
+      margin-bottom: 10px;
+    }
+
+    /* Container flex para os links */
+    .links-container {
+      display: flex;
+      justify-content: center;
+      gap: 15px; /* Espaço entre os links */
+      flex-wrap: wrap; /* Quebra em telas pequenas */
+    }
+
+    .links-container a {
+      display: inline-block;
       color: #128C7E;
       text-decoration: none;
-      margin: 5px 0;
-      transition: color 0.3s;
+      padding: 6px 12px;
+      border: 1px solid #128C7E;
+      border-radius: 8px;
+      transition: background 0.3s, color 0.3s;
+      font-size: 14px;
     }
 
-    .links a:hover {
-      color: #075E54;
+    .links-container a:hover {
+      background-color: #128C7E;
+      color: #ffffff;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <p class="numero">Conversar com <strong>+55 51 99999-9999</strong> no WhatsApp</p>
-    <button class="botao" onclick="window.location.href='batepapo.html'">Iniciar conversa</button>
+    <button class="botao" onclick="window.location.href='batepapo.html'">
+      Iniciar conversa
+    </button>
 
     <div class="links">
       <p>Ainda não tem o WhatsApp?</p>
-      <a href="https://go.perfectpay.com.br/PPU38CQ08HP" target="_blank">Curso Hot Starter</a>
-      <a href="https://go.perfectpay.com.br/PPU38CQ08I2" target="_blank">Curso Hot Essential</a>
-      <a href="https://go.perfectpay.com.br/PPU38CQ08I3" target="_blank">Curso Hot Founder</a>
+      <div class="links-container">
+        <a href="https://go.perfectpay.com.br/PPU38CQ08HP" target="_blank" rel="noopener noreferrer">Curso Hot Starter</a>
+        <a href="https://go.perfectpay.com.br/PPU38CQ08I2" target="_blank" rel="noopener noreferrer">Curso Hot Essential</a>
+        <a href="https://go.perfectpay.com.br/PPU38CQ08I3" target="_blank" rel="noopener noreferrer">Curso Hot Founder</a>
+      </div>
     </div>
   </div>
 </body>
