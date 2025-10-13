@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chat WhatsApp IA</title>
+  <title>Chat WhatsApp - Melissa Castro</title>
   <style>
     body {
       margin: 0;
@@ -116,24 +116,13 @@
       font-size: 18px;
       cursor: pointer;
     }
-
-    .promo {
-      background-color: #fff8e1;
-      border: 1px solid #ffd54f;
-    }
-
-    a {
-      color: #075e54;
-      text-decoration: none;
-    }
   </style>
 </head>
 
 <body>
   <div class="container">
     <div class="header">
-      <div class="avatar" id="avatar">
-        <!-- FOTO PADRÃO -->
+      <div class="avatar">
         <img src="https://files.oaiusercontent.com/file-000000006b60620eab87c0287d8a4cf1/SnapInsta.to_473620269_1155812946101091_5036196859446970365_n.jpg" alt="Melissa Castro" />
       </div>
       <div class="header-info">
@@ -142,11 +131,7 @@
       </div>
     </div>
 
-    <div class="messages" id="messages">
-      <div class="message received">
-        Oi 👋, eu sou a Melissa Castro. Posso te ajudar a aprender a faturar com modelos IA. Como posso te ajudar hoje?
-      </div>
-    </div>
+    <div class="messages" id="messages"></div>
 
     <div class="input-area">
       <input type="text" id="userInput" placeholder="Digite sua mensagem..." />
@@ -159,54 +144,41 @@
     const userInput = document.getElementById("userInput");
     const sendBtn = document.getElementById("sendBtn");
 
-    let messageCount = 0;
-    const promoLimit = 4;
-    const promoLink = "https://go.perfectpay.com.br/PPU38CQ08HP";
+    let hasUserReplied = false;
 
-    sendBtn.addEventListener("click", sendMessage);
-    userInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") sendMessage();
-    });
-
-    function sendMessage() {
-      const text = userInput.value.trim();
-      if (text === "") return;
-
-      appendMessage(text, "sent");
-      userInput.value = "";
-      messageCount++;
-
-      setTimeout(() => {
-        botReply(text);
-      }, 700);
-    }
-
-    function appendMessage(text, type, isPromo = false) {
+    function appendMessage(text, type) {
       const msg = document.createElement("div");
       msg.classList.add("message", type);
-      if (isPromo) msg.classList.add("promo");
       msg.innerHTML = text;
       messages.appendChild(msg);
       messages.scrollTop = messages.scrollHeight;
     }
 
-    function botReply(userText) {
-      if (messageCount >= promoLimit) {
-        appendMessage(
-          `Quer aprender a faturar com uma modelo IA? 💰<br>Adquira nosso curso agora mesmo e aprenda do zero ao avançado a criar operações de sucesso.<br><br><a href="${promoLink}" target="_blank">👉 Comprar agora</a>`,
-          "received",
-          true
-        );
-        messageCount = 0;
-      } else {
-        const replies = [
-          "Interessante! Me conte mais sobre o que você quer aprender.",
-          "Legal 😄, posso te ajudar com isso!",
-          "Certo! Você já tem experiência com inteligência artificial?",
-          "Boa pergunta! Quer que eu te explique como funciona?",
-        ];
-        const reply = replies[Math.floor(Math.random() * replies.length)];
-        appendMessage(reply, "received");
+    // Mensagem inicial automática
+    window.addEventListener("load", () => {
+      appendMessage("Oi 👋, eu sou a Melissa Castro. Tudo bem?", "received");
+    });
+
+    sendBtn.addEventListener("click", sendMessage);
+    userInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    function sendMessage() {
+      const text = userInput.value.trim();
+      if (text === "") return;
+      appendMessage(text, "sent");
+      userInput.value = "";
+
+      // Se ainda não respondeu a primeira vez, envia a resposta automática
+      if (!hasUserReplied) {
+        hasUserReplied = true;
+        setTimeout(() => {
+          appendMessage("Posso te ajudar a faturar com modelo do job, você tem interesse?", "received");
+        }, 1000);
       }
     }
   </script>
