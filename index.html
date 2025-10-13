@@ -62,6 +62,7 @@ const suggestionsArea = document.getElementById('suggestionsArea');
 
 let userResponded = false;
 let firstAutoResponseDone = false;
+let courseOptionsSent = false;
 
 // função para criar bubble
 function appendBubble(text, who='bot', extras={}){
@@ -80,7 +81,7 @@ function appendBubble(text, who='bot', extras={}){
       audioEl.play();
       play.style.pointerEvents='none';
       play.style.opacity='0.6';
-      // adicionar sugestões após clicar no play
+      // adicionar sugestões iniciais após clicar no play
       appendSuggestions(['Não, quero comprar o curso']);
     });
 
@@ -117,7 +118,6 @@ function handleResponse(text){
     appendBubble('Ótimo, vou te enviar alguns detalhes sobre o curso','bot');
   },500);
 
-  // depois dessa resposta, enviar próxima mensagem detalhando os 3 modelos
   if(!firstAutoResponseDone){
     firstAutoResponseDone = true;
     setTimeout(()=>{
@@ -125,7 +125,18 @@ function handleResponse(text){
         'Temos 3 modelos de curso, sendo o Hot Starter, onde você vai aprender o básico como criar sua própria modelo do job; o Hot Essential, onde você aprenderá do básico ao avançado e receberá todos os links e dicas valiosas; e, por fim, para uma estrutura sólida e escalável, temos o Hot Founder, onde você aprenderá tudo inclusive criar sua modelo com IA. Qual dos 3 você tem interesse?',
         'bot'
       );
+
+      // adicionar sugestões dos cursos
+      setTimeout(()=>{
+        appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']);
+        courseOptionsSent = true;
+      }, 500);
+
     }, 1500);
+  } else if(courseOptionsSent){
+    setTimeout(()=>{
+      appendBubble('Ótimo, vou te enviar alguns detalhes sobre o curso escolhido!','bot');
+    }, 500);
   }
 }
 
