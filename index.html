@@ -61,6 +61,7 @@ const suggestionsArea = document.getElementById('suggestionsArea');
 
 let userResponded = false;
 let firstAutoResponseDone = false;
+let courseOptionsSent = false;
 
 // função para criar bubble
 function appendBubble(text, who='bot', extras={}){
@@ -86,7 +87,6 @@ function appendBubble(text, who='bot', extras={}){
     b.appendChild(audioWrap);
   } else if(extras.isCheckout){
     b.innerHTML = `${text}<a class="checkout-link" href="${extras.link}" target="_blank">Clique aqui para comprar</a>`;
-    // adicionar botão de voltar após checkout
     appendSuggestions(['Escolher outras opções']);
   } else {
     b.innerHTML = text.replace(/\n/g,'<br>');
@@ -118,7 +118,10 @@ function handleResponse(text){
   const lowerText = text.toLowerCase();
 
   if(lowerText==='escolher outras opções'){
-    appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']);
+    setTimeout(()=>{
+      appendBubble('A perfeito meu amor, qual você gostaria então. O Hot Starter, Hot Essential ou Hot Founder?','bot');
+      appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']);
+    },300);
     return;
   }
 
@@ -134,7 +137,7 @@ function handleResponse(text){
     return;
   }
 
-  // qualquer outra resposta do usuário
+  // caso seja qualquer outra resposta
   if(!firstAutoResponseDone){
     firstAutoResponseDone = true;
     setTimeout(()=>{
@@ -145,6 +148,7 @@ function handleResponse(text){
           'bot'
         );
         setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),500);
+        courseOptionsSent = true;
       },500);
     },500);
   }
@@ -176,7 +180,7 @@ inputEl.addEventListener('keydown', e=>{
 
 // mensagem inicial
 window.addEventListener('load', ()=>{
-  appendBubble('Oiie meu amor, tudo bem?? eu me chamo Melissa.','bot');
+  appendBubble('Oiie meu amor, tudo bem??? eu me chamo Melissa.','bot');
 });
 </script>
 </body>
