@@ -144,7 +144,7 @@
     const userInput = document.getElementById("userInput");
     const sendBtn = document.getElementById("sendBtn");
 
-    let step = 0; // Controla o fluxo do chat
+    let hasUserReplied = false;
 
     function appendMessage(text, type) {
       const msg = document.createElement("div");
@@ -172,26 +172,12 @@
       if (text === "") return;
       appendMessage(text, "sent");
       userInput.value = "";
-      step++;
 
-      if (step === 1) {
-        // Primeira resposta automática
+      // Se ainda não respondeu a primeira vez, envia a resposta automática
+      if (!hasUserReplied) {
+        hasUserReplied = true;
         setTimeout(() => {
           appendMessage("Posso te ajudar a faturar com modelo do job, você tem interesse?", "received");
-        }, 1000);
-      } else if (step === 2) {
-        // Segunda resposta automática
-        setTimeout(() => {
-          appendMessage("Ótimo, vou te falar alguns pontos sobre nossos cursos...", "received");
-        }, 1000);
-      } else if (step === 3) {
-        // Terceira resposta automática com cursos numerados
-        setTimeout(() => {
-          appendMessage(`Nós temos 3 modelos de cursos:<br>
-1️⃣ Hot Starter<br>
-2️⃣ Hot Essential<br>
-3️⃣ Hot Founder<br>
-Qual gostaria de saber mais?`, "received");
         }, 1000);
       }
     }
