@@ -26,7 +26,7 @@ body{background:#e6f0ef;display:flex;align-items:center;justify-content:center;h
 .btn{background:#25d366;border-radius:12px;padding:8px 12px;color:white;font-weight:600;border:none;cursor:pointer}
 .typing{font-size:12px;color:#666;margin-left:6px}
 .audio{display:flex;align-items:center;gap:8px}
-.play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #ddd}
+.play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #ddd;cursor:pointer;background:#25d366;color:#fff;font-weight:bold}
 </style>
 </head>
 <body>
@@ -59,31 +59,35 @@ const sendBtn = document.getElementById('sendBtn');
 function appendBubble(text, who='bot', extras={}){
   const b = document.createElement('div');
   b.className = 'bubble ' + (who==='bot' ? 'from-bot' : 'from-me');
+
   if(extras.isAudio){
     const audioWrap = document.createElement('div');
     audioWrap.className='audio';
-    const play = document.createElement('div'); play.className='play'; play.innerText='▶';
-    const info = document.createElement('div'); info.innerText = extras.caption || 'Áudio';
-    audioWrap.appendChild(play); audioWrap.appendChild(info);
+    const play = document.createElement('div'); 
+    play.className='play'; 
+    play.innerText='▶';
+    const info = document.createElement('div'); 
+    info.innerText = extras.caption || 'Mensagem de voz';
+    audioWrap.appendChild(play); 
+    audioWrap.appendChild(info);
     b.appendChild(audioWrap);
-    const audioEl = new Audio(extras.src);
-    play.addEventListener('click', ()=>audioEl.play());
+
+    // Criar Audio dinamicamente com TTS do navegador ao clicar
+    play.addEventListener('click', ()=>{
+      const utter = new SpeechSynthesisUtterance(extras.text);
+      utter.lang='pt-BR';
+      const voices = speechSynthesis.getVoices();
+      const v = voices.find(x=>/pt-BR|brazilian/i.test(x.lang) && /female/i.test(x.name)) || voices.find(x=>/female/i.test(x.name)) || voices[0];
+      if(v) utter.voice=v;
+      speechSynthesis.speak(utter);
+    });
+
   } else {
     b.innerHTML = text.replace(/\n/g,'<br>');
   }
+
   messagesEl.appendChild(b);
   messagesEl.scrollTop = messagesEl.scrollHeight;
-}
-
-function speakText(text){
-  if(!('speechSynthesis' in window)) return;
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang='pt-BR';
-  const voices = speechSynthesis.getVoices();
-  const v = voices.find(x=>/pt-BR|brazilian/i.test(x.lang)) || voices[0];
-  if(v) utter.voice=v;
-  speechSynthesis.speak(utter);
-  appendBubble('Áudio enviado','bot',{isAudio:true,caption:'Mensagem de voz',src:''});
 }
 
 function handleUserMessage(){
@@ -92,9 +96,9 @@ function handleUserMessage(){
   appendBubble(text,'me');
   inputEl.innerText='';
 
-  // Resposta robotizada
+  // Resposta robotizada com áudio clicável
   const reply = "Que ótimo, vou te passar 3 modelos sobre o curso, tá bom?";
-  speakText(reply);
+  appendBubble('', 'bot', {isAudio:true, caption:reply, text: reply});
 }
 
 sendBtn.addEventListener('click', handleUserMessage);
@@ -107,7 +111,7 @@ inputEl.addEventListener('keydown', e=>{
 
 // Saudação inicial
 window.addEventListener('load', ()=>{
-  appendBubble('Oiie, eu sou a Melissa Castro. Tudo bem meu amor?','bot');
+  appendBubble('Oi 👋, eu sou a Melissa Castro. Posso te ajudar a aprender a faturar com modelos IA. Como posso te ajudar hoje?','bot');
 });
 </script>
 </body>
