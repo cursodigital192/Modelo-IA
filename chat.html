@@ -137,6 +137,15 @@
     height:100%;
     object-fit:cover;
   }
+
+  /* Links dentro das bolhas em azul claro */
+  .bubble a {
+    color: #4ea5f7;
+    text-decoration: underline;
+  }
+  .bubble a:hover {
+    color: #73c0ff;
+  }
 </style>
 </head>
 <body>
@@ -281,7 +290,7 @@ async function handleResponse(text){
       'bot'
     );
 
-    // ✅ Mensagens adicionais com links de vídeos
+    // Mensagens adicionais com links de vídeos
     setTimeout(async ()=>{
       await showTyping();
       appendBubble('Vou te mandar 3 links de vídeos para você saber o que vai adquirir no curso','bot');
@@ -293,7 +302,7 @@ async function handleResponse(text){
       appendBubble('<a href="https://youtu.be/veENgsiL_DA" target="_blank">https://youtu.be/veENgsiL_DA</a>','bot');
 
       await showTyping();
-     appendBubble('<a href="https://youtu.be/rzvbOZZZad0" target="_blank">https://youtu.be/rzvbOZZZad0</a>','bot');
+      appendBubble('<a href="https://youtu.be/rzvbOZZZad0" target="_blank">https://youtu.be/rzvbOZZZad0</a>','bot');
 
       setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),400);
     }, 500);
