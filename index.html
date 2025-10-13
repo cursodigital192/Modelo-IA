@@ -2,82 +2,85 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
 <title>Chat WhatsApp - Simulado</title>
 <style>
-  * { box-sizing:border-box; margin:0; padding:0; font-family:Inter, system-ui, Arial, sans-serif; }
-  body { background:#121b22; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; padding:0; }
-
-  .app {
-    width:100%; max-width:420px; height:75vh; /* menor altura */
-    background:#1e2a33; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.3);
-    display:flex; flex-direction:column; overflow:hidden;
+  *{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, Arial, sans-serif}
+  body{background:#121b22;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;padding:0}
+  .app{
+    width:95%;
+    max-width:360px;
+    height:85vh;
+    background:#1e2a33;
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
   }
-
-  .header {
-    height:72px; padding:12px 14px; display:flex; align-items:center;
-    border-bottom:1px solid #2c3e50; position:sticky; top:0; background:#1e2a33; z-index:10;
+  .header{
+    height:60px;
+    padding:8px 12px;
+    display:flex;
+    align-items:center;
+    border-bottom:1px solid #2c3e50;
+    position:sticky;
+    top:0;
+    background:#1e2a33;
+    z-index:10;
   }
-
-  .avatar { width:48px; height:48px; border-radius:50%; overflow:hidden; margin-right:12px; flex-shrink:0; background:#ccc; }
-  .avatar img { width:100%; height:100%; object-fit:cover; }
-  .meta { flex:1; }
-  .name { font-weight:600; color:#fff; }
-  .status { font-size:12px; color:#9aa0a6; }
-
-  .messages {
-    flex:1; padding:16px; display:flex; flex-direction:column; gap:12px;
-    overflow-y:auto; background:#121b22;
+  .avatar{width:40px;height:40px;border-radius:50%;overflow:hidden;margin-right:10px;flex-shrink:0;background:#ccc}
+  .avatar img{width:100%;height:100%;object-fit:cover}
+  .meta{flex:1}
+  .name{font-weight:600;color:#fff;font-size:14px}
+  .status{font-size:10px;color:#9aa0a6}
+  .messages{
+    flex:1;
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    overflow-y:auto;
+    background:#121b22;
   }
-  .messages::-webkit-scrollbar { width:6px; }
-  .messages::-webkit-scrollbar-track { background:#121b22; }
-  .messages::-webkit-scrollbar-thumb { background-color:#444; border-radius:3px; }
-
-  .bubble { max-width:78%; padding:10px 14px; border-radius:18px; line-height:1.35; position:relative; word-wrap:break-word; }
-  .from-bot { background:#2c3e50; color:#fff; align-self:flex-start; border-top-left-radius:6px; }
-  .from-me { background:#25d366; color:#000; align-self:flex-end; border-top-right-radius:6px; }
-
-  .composer {
-    border-top:1px solid #2c3e50; padding:10px; display:flex; flex-direction:column; gap:6px; background:#1e2a33;
+  .messages::-webkit-scrollbar{width:5px}
+  .messages::-webkit-scrollbar-track{background:#121b22}
+  .messages::-webkit-scrollbar-thumb{background-color:#444;border-radius:3px}
+  .bubble{max-width:75%;padding:6px 10px;border-radius:16px;line-height:1.35;position:relative;word-wrap: break-word;font-size:13px;}
+  .from-bot{background:#2c3e50;color:#fff;align-self:flex-start;border-top-left-radius:6px}
+  .from-me{background:#25d366;color:#000;align-self:flex-end;border-top-right-radius:6px}
+  .composer{
+    border-top:1px solid #2c3e50;
+    padding:6px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    background:#1e2a33;
   }
-
-  .row { display:flex; align-items:center; gap:8px; }
-  .input { flex:1; background:#2c3e50; border-radius:20px; padding:10px 14px; min-height:44px; display:flex; align-items:center; color:#fff; }
-  .input[contenteditable]{ outline:none; }
-  .btn { background:#25d366; border-radius:12px; padding:8px 12px; color:white; font-weight:600; border:none; cursor:pointer; }
-
-  .audio { display:flex; align-items:center; gap:8px; }
-
-  /* Botão de áudio estilo WhatsApp */
-  .play {
-    width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    border:none; cursor:pointer; background:#25d366; color:#fff; position:relative; overflow:hidden;
-  }
-
-  .wave {
-    position:absolute; bottom:8px; width:3px; background:#fff; height:4px;
-    animation:wave 1s infinite; animation-play-state:paused;
-  }
-  .wave1 { left:10px; animation-delay:0s; }
-  .wave2 { left:16px; animation-delay:0.2s; }
-  .wave3 { left:22px; animation-delay:0.4s; }
-
-  @keyframes wave { 0%,40%,100%{height:4px;} 20%{height:12px;} }
-
-  .suggestions-container { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:6px; }
-  .suggestion-btn { background:#25d366; color:white; padding:6px 12px; border-radius:18px; border:none; cursor:pointer; font-weight:600; font-size:14px; }
-  .checkout-link { display:block; margin-top:6px; color:#4ea5f7; text-decoration:underline; cursor:pointer; font-weight:600; }
+  .row{display:flex;align-items:center;gap:4px}
+  .input{flex:1;background:#2c3e50;border-radius:20px;padding:6px 10px;min-height:36px;display:flex;align-items:center;color:#fff;font-size:13px}
+  .input[contenteditable]{outline:none}
+  .btn{background:#25d366;border-radius:12px;padding:6px 10px;color:white;font-weight:600;border:none;cursor:pointer;font-size:12px}
+  .audio{display:flex;align-items:center;gap:6px}
+  .play{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;border:1px solid #444;cursor:pointer;color:#fff;background:#25d366;font-size:16px}
+  .suggestions-container{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+  .suggestion-btn{background:#25d366;color:white;padding:4px 10px;border-radius:16px;border:none;cursor:pointer;font-weight:600;font-size:12px}
+  .checkout-link{display:block;margin-top:4px;color:#4ea5f7;text-decoration:underline;cursor:pointer;font-weight:600;font-size:13px;}
+  .typing-bubble{display:flex;align-items:center;gap:3px;justify-content:flex-start;max-width:40px; height:20px;}
+  .dot{width:5px;height:5px;background:#666;border-radius:50%;animation:blink 1s infinite;animation-delay:0s;}
+  .dot:nth-child(2){animation-delay:0.2s;}
+  .dot:nth-child(3){animation-delay:0.4s;}
+  @keyframes blink{0%,80%,100%{opacity:0.2}40%{opacity:1}}
 </style>
 </head>
 <body>
-
 <div class="app">
   <div class="header">
     <div class="avatar">
       <img src="https://somosnews.com.mx/wp-content/uploads/2024/02/modelos-triunfan-redes-sociales-inteligencia-artificial.jpg" alt="Melissa">
     </div>
     <div class="meta">
-      <div class="name">Melissa</div>
+      <div class="name">Melissa Castro</div>
       <div class="status" id="status">online</div>
     </div>
   </div>
@@ -98,42 +101,52 @@ const messagesEl = document.getElementById('messages');
 const inputEl = document.getElementById('input');
 const sendBtn = document.getElementById('sendBtn');
 const suggestionsArea = document.getElementById('suggestionsArea');
+const statusEl = document.getElementById('status');
 
 let userResponded = false;
 let firstAutoResponseDone = false;
 
-// Função para criar bolha de mensagem
+function showTyping(duration = 1000){
+  statusEl.innerText = 'digitando...';
+  const typingBubble = document.createElement('div');
+  typingBubble.className = 'bubble from-bot';
+  typingBubble.id = 'typingBubble';
+  typingBubble.innerHTML = `<div class="typing-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  messagesEl.appendChild(typingBubble);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  return new Promise(resolve=>{
+    setTimeout(()=>{
+      typingBubble.remove();
+      statusEl.innerText = 'online';
+      resolve();
+    }, duration);
+  });
+}
+
 function appendBubble(text, who='bot', extras={}){
   const b = document.createElement('div');
   b.className = 'bubble ' + (who==='bot' ? 'from-bot' : 'from-me');
 
-  // Áudio com ondas estilo WhatsApp
   if(extras.isAudio){
     const audioWrap = document.createElement('div');
     audioWrap.className = 'audio';
-    const play = document.createElement('button');
+    const play = document.createElement('div');
     play.className='play';
-    play.innerHTML = '▶<div class="wave wave1"></div><div class="wave wave2"></div><div class="wave wave3"></div>';
-
     const audioEl = new Audio(extras.src);
-    const waves = play.querySelectorAll('.wave');
-
-    function startWaves(){ waves.forEach(w => w.style.animationPlayState='running'); }
-    function stopWaves(){ waves.forEach(w => w.style.animationPlayState='paused'); }
 
     play.addEventListener('click', ()=>{
-      audioEl.play(); startWaves(); play.disabled = true;
+      audioEl.play();
+      play.style.pointerEvents='none';
+      play.style.opacity='0.6';
+      appendSuggestions(['Não, quero comprar o curso']);
     });
-    audioEl.addEventListener('ended', ()=>{ stopWaves(); play.disabled = false; });
 
     audioWrap.appendChild(play);
     b.appendChild(audioWrap);
-  }
-  else if(extras.isCheckout){
+  } else if(extras.isCheckout){
     b.innerHTML = `${text}<a class="checkout-link" href="${extras.link}" target="_blank">Clique aqui para comprar</a>`;
     appendSuggestions(['Escolher outras opções']);
-  }
-  else {
+  } else {
     b.innerHTML = text.replace(/\n/g,'<br>');
   }
 
@@ -141,13 +154,12 @@ function appendBubble(text, who='bot', extras={}){
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-// Função para criar sugestões
 function appendSuggestions(options){
   suggestionsArea.innerHTML='';
   options.forEach(opt=>{
     const btn = document.createElement('button');
     btn.className='suggestion-btn';
-    btn.innerText = opt;
+    btn.innerText=opt;
     btn.addEventListener('click', async ()=>{
       appendBubble(opt,'me');
       suggestionsArea.innerHTML='';
@@ -158,26 +170,13 @@ function appendSuggestions(options){
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-// Função "digitando..."
-async function showTyping(duration=1200){
-  const typingBubble = document.createElement('div');
-  typingBubble.className='bubble from-bot';
-  typingBubble.innerHTML='digitando...';
-  messagesEl.appendChild(typingBubble);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-  return new Promise(resolve=>{
-    setTimeout(()=>{ typingBubble.remove(); resolve(); }, duration);
-  });
-}
-
-// Resposta automática
 async function handleResponse(text){
   const lowerText = text.toLowerCase();
 
   if(lowerText==='escolher outras opções'){
     await showTyping();
     appendBubble('Ah perfeito meu amor, qual você gostaria então. O Hot Starter, Hot Essential ou Hot Founder?','bot');
-    appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']);
+    setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),400);
     return;
   }
 
@@ -201,22 +200,22 @@ async function handleResponse(text){
       'Temos 3 modelos de curso, sendo o Hot Starter, onde você vai aprender o básico como criar sua própria modelo do job; o Hot Essential, onde você aprenderá do básico ao avançado e receberá todos os links e dicas valiosas; e, por fim, para uma estrutura sólida e escalável, temos o Hot Founder, onde você aprenderá tudo inclusive criar sua modelo com IA. Qual dos 3 você tem interesse?',
       'bot'
     );
-    appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']);
+    setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),400);
   }
 }
 
-// Enviar mensagem
 function sendMessage(){
   const text = inputEl.innerText.trim();
   if(!text) return;
   appendBubble(text,'me');
-  inputEl.innerText='';
+  inputEl.value = '';
+  inputEl.innerText = '';
 
   if(!userResponded){
     userResponded = true;
     setTimeout(()=>{
-      appendBubble(null,'bot',{isAudio:'https://drive.google.com/uc?export=download&id=1PE5xWkwNw_RSkHvXwrnDObbsH1CaZNdO'});
-    },800);
+      appendBubble(null,'bot',{isAudio:true, src:'https://s31.aconvert.com/convert/p3r68-cdx67/8kair-dvode.mp3'});
+    }, 600);
   } else {
     handleResponse(text);
   }
@@ -224,10 +223,12 @@ function sendMessage(){
 
 sendBtn.addEventListener('click', sendMessage);
 inputEl.addEventListener('keydown', e=>{
-  if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
+  if(e.key==='Enter' && !e.shiftKey){e.preventDefault(); sendMessage();}
 });
 
-window.addEventListener('load', ()=>{ appendBubble('Oiie meu amor, tudo bem? eu me chamo Melissa.','bot'); });
+window.addEventListener('load', ()=>{
+  appendBubble('Oiie meu amor, tudo bem?','bot');
+});
 </script>
 </body>
 </html>
