@@ -40,8 +40,8 @@
   <div class="app">
     <div class="header">
       <div class="avatar" id="avatar">
-        <!-- Foto de perfil padrão -->
-        <img src="https://osegredo.com.br/wp-content/uploads/2024/01/Emily-Pellegrini-1.jpg" alt="avatar">
+        <!-- Foto de perfil padrão fixa -->
+        <img src="https://tse1.mm.bing.net/th/id/OIP.DGHwK5TLXwX79hGmftJ9wQHaE8?cb=12&pid=Api" alt="avatar">
       </div>
       <div class="meta">
         <div class="name">Melissa Castro</div>
@@ -102,7 +102,6 @@
       appendBubble(text,'me');
       history.push({role:'user',content:text});
       inputEl.innerText=''; totalExchanges++;
-
       setTyping(true);
       try{
         const res = await fetch(AI_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,history})});
