@@ -18,13 +18,11 @@
   .bubble{max-width:78%;padding:10px 14px;border-radius:18px;line-height:1.35}
   .from-bot{background:#ffffff;border:1px solid #e6e6e6;align-self:flex-start;border-top-left-radius:6px}
   .from-me{background:#dcf8c6;align-self:flex-end;border-top-right-radius:6px}
-  .bubble small{display:block;margin-top:6px;font-size:11px;color:#666}
   .composer{height:88px;border-top:1px solid #e6e6e6;padding:10px;display:flex;flex-direction:column;gap:6px}
   .row{display:flex;align-items:center;gap:8px}
   .input{flex:1;background:#f7f7f7;border-radius:20px;padding:10px 14px;min-height:44px;display:flex;align-items:center}
   .input[contenteditable]{outline:none}
   .btn{background:#25d366;border-radius:12px;padding:8px 12px;color:white;font-weight:600;border:none;cursor:pointer}
-  .typing{font-size:12px;color:#666;margin-left:6px}
   .audio{display:flex;align-items:center;gap:8px}
   .play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #ddd;cursor:pointer}
 </style>
@@ -70,13 +68,16 @@ function appendBubble(text, who='bot', extras={}){
     play.className='play';
     play.innerText='▶';
     const audioEl = new Audio(extras.src);
+
     play.addEventListener('click', ()=>{
       audioEl.play();
-      audioEl.onended = ()=>{
-        // quando terminar o áudio, envia a mensagem seguinte
-        appendBubble('Ou você prefere aprender a criar uma modelo do job e faturar com isso?','bot');
-      };
+      // adiciona a próxima mensagem **assim que o usuário clicar**
+      appendBubble('Ou você prefere aprender a criar uma modelo do job e faturar com isso?','bot');
+      // desativa o botão de play após clique
+      play.style.pointerEvents='none';
+      play.style.opacity='0.6';
     });
+
     audioWrap.appendChild(play);
     b.appendChild(audioWrap);
   } else {
@@ -92,6 +93,7 @@ function sendMessage(){
   const text = inputEl.innerText.trim();
   if(!text) return;
   appendBubble(text,'me');
+  inputEl.value = '';
   inputEl.innerText = '';
 
   if(!userResponded){
@@ -110,7 +112,7 @@ inputEl.addEventListener('keydown', e=>{
 
 // mensagem inicial
 window.addEventListener('load', ()=>{
-  appendBubble('Oiie meu amor, tudo bem?? eu me chamo Melissa.','bot');
+  appendBubble('Oiie meu amor, tudo bem? eu me chamo Melissa.','bot');
 });
 </script>
 </body>
