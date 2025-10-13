@@ -61,7 +61,15 @@
   .input{flex:1;background:#2c3e50;border-radius:20px;padding:6px 10px;min-height:36px;display:flex;align-items:center;color:#fff;font-size:13px}
   .input[contenteditable]{outline:none}
   .btn{background:#25d366;border-radius:12px;padding:6px 10px;color:white;font-weight:600;border:none;cursor:pointer;font-size:12px}
-  .audio{display:flex;align-items:center;gap:6px}
+  .audio{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:#2c3e50;
+    padding:6px 10px;
+    border-radius:16px;
+    max-width:200px;
+  }
   .play{
     width:32px;
     height:32px;
@@ -73,20 +81,22 @@
     color:#fff;
     background:#25d366;
     font-size:16px;
-    position:relative;
-    overflow:hidden;
+    flex-shrink:0;
+  }
+  .audio-waves{
+    display:flex;
+    gap:2px;
+    margin-left:auto;
   }
   .wave{
-    display:inline-block;
     width:4px;
     height:12px;
-    margin:0 1px;
     background:#fff;
     animation:wave 1s infinite;
   }
   .wave:nth-child(2){animation-delay:0.2s;}
   .wave:nth-child(3){animation-delay:0.4s;}
-  @keyframes wave {
+  @keyframes wave{
     0%,40%,100%{height:4px;}
     20%{height:12px;}
   }
@@ -159,112 +169,16 @@ function appendBubble(text, who='bot', extras={}){
     audioWrap.className = 'audio';
 
     const play = document.createElement('button');
-    play.className = 'play';
+    play.className='play';
     play.innerHTML = `
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polygon points="5 3 19 12 5 21 5 3"></polygon>
       </svg>
-      <div class="wave"></div>
-      <div class="wave"></div>
-      <div class="wave"></div>
     `;
+
+    const wavesContainer = document.createElement('div');
+    wavesContainer.className = 'audio-waves';
+    wavesContainer.innerHTML = '<div class="wave"></div><div class="wave"></div><div class="wave"></div>';
+
     const audioEl = new Audio(extras.src);
-
-    play.addEventListener('click', ()=>{
-      audioEl.play();
-      play.disabled = true;
-      play.style.opacity='0.6';
-      appendSuggestions(['Não, quero comprar o curso']);
-    });
-
-    audioWrap.appendChild(play);
-    b.appendChild(audioWrap);
-  } else if(extras.isCheckout){
-    b.innerHTML = `${text}<a class="checkout-link" href="${extras.link}" target="_blank">Clique aqui para comprar</a>`;
-    appendSuggestions(['Escolher outras opções']);
-  } else {
-    b.innerHTML = text.replace(/\n/g,'<br>');
-  }
-
-  messagesEl.appendChild(b);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-}
-
-function appendSuggestions(options){
-  suggestionsArea.innerHTML='';
-  options.forEach(opt=>{
-    const btn = document.createElement('button');
-    btn.className='suggestion-btn';
-    btn.innerText=opt;
-    btn.addEventListener('click', async ()=>{
-      appendBubble(opt,'me');
-      suggestionsArea.innerHTML='';
-      await handleResponse(opt);
-    });
-    suggestionsArea.appendChild(btn);
-  });
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-}
-
-async function handleResponse(text){
-  const lowerText = text.toLowerCase();
-
-  if(lowerText==='escolher outras opções'){
-    await showTyping();
-    appendBubble('Ah perfeito meu amor, qual você gostaria então. O Hot Starter, Hot Essential ou Hot Founder?','bot');
-    setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),400);
-    return;
-  }
-
-  if(['hot starter','hot essential','hot founder'].includes(lowerText)){
-    let link='';
-    if(lowerText==='hot starter') link='https://go.perfectpay.com.br/PPU38CQ08HP';
-    else if(lowerText==='hot essential') link='https://go.perfectpay.com.br/PPU38CQ08I2';
-    else if(lowerText==='hot founder') link='https://go.perfectpay.com.br/PPU38CQ08I3';
-
-    await showTyping();
-    appendBubble('Ótima escolha, vou te enviar o link checkout para você iniciar suas operações agora mesmo!','bot',{isCheckout:true, link:link});
-    return;
-  }
-
-  if(!firstAutoResponseDone){
-    firstAutoResponseDone = true;
-    await showTyping();
-    appendBubble('Ótimo, vou te enviar alguns detalhes sobre o curso','bot');
-    await showTyping();
-    appendBubble(
-      'Temos 3 modelos de curso, sendo o Hot Starter, onde você vai aprender o básico como criar sua própria modelo do job; o Hot Essential, onde você aprenderá do básico ao avançado e receberá todos os links e dicas valiosas; e, por fim, para uma estrutura sólida e escalável, temos o Hot Founder, onde você aprenderá tudo inclusive criar sua modelo com IA. Qual dos 3 você tem interesse?',
-      'bot'
-    );
-    setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),400);
-  }
-}
-
-function sendMessage(){
-  const text = inputEl.innerText.trim();
-  if(!text) return;
-  appendBubble(text,'me');
-  inputEl.value='';
-  inputEl.innerText = '';
-
-  if(!userResponded){
-    userResponded = true;
-    setTimeout(()=>{
-      appendBubble(null,'bot',{isAudio:true, src:'https://s31.aconvert.com/convert/p3r68-cdx67/8kair-dvode.mp3'});
-    }, 600);
-  } else {
-    handleResponse(text);
-  }
-}
-
-sendBtn.addEventListener('click', sendMessage);
-inputEl.addEventListener('keydown', e=>{
-  if(e.key==='Enter' && !e.shiftKey){e.preventDefault(); sendMessage();}
-});
-
-window.addEventListener('load', ()=>{
-  appendBubble('Oiie meu amor, tudo bem?','bot');
-});
-</script>
-</body>
-</html>
+    play.addEventListener('click', (
