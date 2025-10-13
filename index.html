@@ -3,35 +3,73 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Chat WhatsApp - Simulado (IA)</title>
+<title>Chat WhatsApp - Simulado</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, Arial, sans-serif}
   body{background:#121b22;display:flex;align-items:center;justify-content:center;height:100vh}
-  .app{width:420px;height:700px;background:#1e2a33;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.3);display:flex;flex-direction:column;overflow:hidden}
-  .header{height:72px;padding:12px 14px;display:flex;align-items:center;border-bottom:1px solid #2c3e50;position:sticky;top:0;background:#1e2a33;z-index:10}
+  .app{width:100%;max-width:420px;height:600px;background:#1e2c33;border-radius:16px;display:flex;flex-direction:column;overflow:hidden}
+  .header{height:72px;padding:12px 14px;display:flex;align-items:center;border-bottom:1px solid #2a3a40;flex-shrink:0;background:#1e2c33;position:sticky;top:0;z-index:10}
   .avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;margin-right:12px;flex-shrink:0;background:#ccc}
   .avatar img{width:100%;height:100%;object-fit:cover}
-  .meta{flex:1}
-  .name{font-weight:600;color:#fff}
-  .status{font-size:12px;color:#9aa0a6}
+  .meta{flex:1;color:#fff}
+  .name{font-weight:600}
+  .status{font-size:12px;color:#b0b0b0}
   .messages{flex:1;padding:20px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;background:#121b22}
-  .messages::-webkit-scrollbar{width:6px}
-  .messages::-webkit-scrollbar-track{background:#121b22}
-  .messages::-webkit-scrollbar-thumb{background-color:#444;border-radius:3px}
-  .bubble{max-width:78%;padding:10px 14px;border-radius:18px;line-height:1.35;position:relative;word-wrap: break-word;}
-  .from-bot{background:#2c3e50;color:#fff;align-self:flex-start;border-top-left-radius:6px}
-  .from-me{background:#25d366;color:#000;align-self:flex-end;border-top-right-radius:6px}
-  .composer{border-top:1px solid #2c3e50;padding:10px;display:flex;flex-direction:column;gap:6px;background:#1e2a33}
+  .bubble{max-width:78%;padding:10px 14px;border-radius:18px;line-height:1.35;position:relative;color:#fff}
+  .from-bot{background:#2a3a40;border-top-left-radius:6px;align-self:flex-start}
+  .from-me{background:#056162;border-top-right-radius:6px;align-self:flex-end}
+  .composer{border-top:1px solid #2a3a40;padding:10px;display:flex;flex-direction:column;gap:6px;background:#1e2c33;flex-shrink:0}
   .row{display:flex;align-items:center;gap:8px}
-  .input{flex:1;background:#2c3e50;border-radius:20px;padding:10px 14px;min-height:44px;display:flex;align-items:center;color:#fff}
+  .input{flex:1;background:#24333b;border-radius:20px;padding:10px 14px;min-height:44px;color:#fff;display:flex;align-items:center}
   .input[contenteditable]{outline:none}
   .btn{background:#25d366;border-radius:12px;padding:8px 12px;color:white;font-weight:600;border:none;cursor:pointer}
-  .audio{display:flex;align-items:center;gap:8px}
-  .play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #444;cursor:pointer;color:#fff;background:#2c3e50}
   .suggestions-container{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
   .suggestion-btn{background:#25d366;color:white;padding:6px 12px;border-radius:18px;border:none;cursor:pointer;font-weight:600;font-size:14px}
-  .checkout-link{display:block;margin-top:6px;color:#4ea5f7;text-decoration:underline;cursor:pointer;font-weight:600;}
-  .typing-indicator{color:#9aa0a6;font-size:12px;margin-bottom:6px}
+  .checkout-link{display:block;margin-top:6px;color:#00afff;text-decoration:underline;cursor:pointer;font-weight:600}
+
+  /* áudio estilo WhatsApp */
+  .audio {
+    position: relative;
+    width: 60px;
+    height: 40px;
+    background: #25d366;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .audio .triangle {
+    width: 0;
+    height: 0;
+    border-left: 12px solid white;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    margin-left: 2px;
+  }
+  .audio .waves {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    transform: translate(-50%, -50%);
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+  }
+  .audio .wave {
+    width: 4px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 2px;
+    animation: waveAnim 0.6s infinite;
+  }
+  .audio.playing .waves {opacity: 1;}
+  .audio .wave:nth-child(1) { animation-delay: 0s; }
+  .audio .wave:nth-child(2) { animation-delay: 0.2s; }
+  .audio .wave:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes waveAnim {0%,100%{height:8px;}50%{height:20px;}}
 </style>
 </head>
 <body>
@@ -49,7 +87,6 @@
   <div class="messages" id="messages"></div>
 
   <div class="composer">
-    <div id="typingIndicator" class="typing-indicator"></div>
     <div id="suggestionsArea" class="suggestions-container"></div>
     <div class="row">
       <div class="input" id="input" contenteditable="true" role="textbox" aria-multiline="true" placeholder="Escreva uma mensagem..."></div>
@@ -63,7 +100,6 @@ const messagesEl = document.getElementById('messages');
 const inputEl = document.getElementById('input');
 const sendBtn = document.getElementById('sendBtn');
 const suggestionsArea = document.getElementById('suggestionsArea');
-const typingIndicator = document.getElementById('typingIndicator');
 
 let userResponded = false;
 let firstAutoResponseDone = false;
@@ -76,21 +112,31 @@ function appendBubble(text, who='bot', extras={}){
 
   if(extras.isAudio){
     const audioWrap = document.createElement('div');
-    audioWrap.className = 'audio';
-    const play = document.createElement('div');
-    play.className='play';
-    play.innerText='▶';
-    const audioEl = new Audio(extras.src);
+    audioWrap.className='audio';
 
-    play.addEventListener('click', ()=>{
+    const triangle = document.createElement('div');
+    triangle.className='triangle';
+    audioWrap.appendChild(triangle);
+
+    const waves = document.createElement('div');
+    waves.className='waves';
+    for(let i=0;i<3;i++){
+      const w = document.createElement('div');
+      w.className='wave';
+      waves.appendChild(w);
+    }
+    audioWrap.appendChild(waves);
+
+    const audioEl = new Audio(extras.src);
+    audioWrap.addEventListener('click', ()=>{
       audioEl.play();
-      play.style.pointerEvents='none';
-      play.style.opacity='0.6';
+      audioWrap.classList.add('playing');
+      audioEl.onended = ()=>audioWrap.classList.remove('playing');
       appendSuggestions(['Não, quero comprar o curso']);
     });
 
-    audioWrap.appendChild(play);
     b.appendChild(audioWrap);
+
   } else if(extras.isCheckout){
     b.innerHTML = `${text}<a class="checkout-link" href="${extras.link}" target="_blank">Clique aqui para comprar</a>`;
     appendSuggestions(['Escolher outras opções']);
@@ -119,22 +165,13 @@ function appendSuggestions(options){
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-// digitação
-function showTypingIndicator(show){
-  typingIndicator.innerText = show ? 'digitando...' : '';
-}
-
-// lidar com resposta
+// lidar com respostas
 function handleResponse(text){
   const lowerText = text.toLowerCase();
 
   if(lowerText==='escolher outras opções'){
-    showTypingIndicator(true);
-    setTimeout(()=>{
-      showTypingIndicator(false);
-      appendBubble('Ah perfeito meu amor, qual você gostaria então. O Hot Starter, Hot Essential ou Hot Founder?','bot');
-      appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']);
-    },800);
+    setTimeout(()=>appendBubble('Ah perfeito meu amor, qual você gostaria então. O Hot Starter, Hot Essential ou Hot Founder?','bot'),500);
+    setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),800);
     return;
   }
 
@@ -144,29 +181,25 @@ function handleResponse(text){
     else if(lowerText==='hot essential') link='https://go.perfectpay.com.br/PPU38CQ08I2';
     else if(lowerText==='hot founder') link='https://go.perfectpay.com.br/PPU38CQ08I3';
 
-    showTypingIndicator(true);
     setTimeout(()=>{
-      showTypingIndicator(false);
       appendBubble('Ótima escolha, vou te enviar o link checkout para você iniciar suas operações agora mesmo!','bot',{isCheckout:true, link:link});
-    },800);
+    },500);
     return;
   }
 
   if(!firstAutoResponseDone){
     firstAutoResponseDone = true;
-    showTypingIndicator(true);
     setTimeout(()=>{
-      showTypingIndicator(false);
       appendBubble('Ótimo, vou te enviar alguns detalhes sobre o curso','bot');
       setTimeout(()=>{
         appendBubble(
           'Temos 3 modelos de curso, sendo o Hot Starter, onde você vai aprender o básico como criar sua própria modelo do job; o Hot Essential, onde você aprenderá do básico ao avançado e receberá todos os links e dicas valiosas; e, por fim, para uma estrutura sólida e escalável, temos o Hot Founder, onde você aprenderá tudo inclusive criar sua modelo com IA. Qual dos 3 você tem interesse?',
           'bot'
         );
-        appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']);
+        setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),500);
         courseOptionsSent = true;
       },500);
-    },800);
+    },500);
   }
 }
 
@@ -175,15 +208,13 @@ function sendMessage(){
   const text = inputEl.innerText.trim();
   if(!text) return;
   appendBubble(text,'me');
-  inputEl.innerText='';
+  inputEl.innerText = '';
 
   if(!userResponded){
     userResponded = true;
-    showTypingIndicator(true);
-    setTimeout(()=>{
-      showTypingIndicator(false);
+    setTimeout(()=>{ 
       appendBubble(null,'bot',{isAudio:true, src:'https://s31.aconvert.com/convert/p3r68-cdx67/8kair-dvode.mp3'});
-    },800);
+    }, 800);
   } else {
     handleResponse(text);
   }
