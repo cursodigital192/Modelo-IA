@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Chat WhatsApp - Simulado (IA)</title>
+<title>Chat WhatsApp - Robotizado</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, Arial, sans-serif}
 body{background:#e6f0ef;display:flex;align-items:center;justify-content:center;height:100vh}
@@ -24,12 +24,9 @@ body{background:#e6f0ef;display:flex;align-items:center;justify-content:center;h
 .input{flex:1;background:#f7f7f7;border-radius:20px;padding:10px 14px;min-height:44px;display:flex;align-items:center}
 .input[contenteditable]{outline:none}
 .btn{background:#25d366;border-radius:12px;padding:8px 12px;color:white;font-weight:600;border:none;cursor:pointer}
-.link-btn{background:transparent;color:#007aff;border:1px solid #e0e0e0;padding:6px 8px;border-radius:8px}
 .typing{font-size:12px;color:#666;margin-left:6px}
 .audio{display:flex;align-items:center;gap:8px}
 .play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #ddd}
-.promo{background:#fff8e6;border:1px solid #ffd28a;padding:10px;border-radius:12px}
-.promo a{display:inline-block;margin-top:8px;background:#ff8c00;padding:8px 12px;color:#fff;border-radius:8px;text-decoration:none}
 </style>
 </head>
 <body>
@@ -48,35 +45,20 @@ body{background:#e6f0ef;display:flex;align-items:center;justify-content:center;h
 
   <div class="composer">
     <div class="row">
-      <div class="input" id="input" contenteditable="true" role="textbox" aria-multiline="true" placeholder="Escreva uma mensagem..."></div>
+      <div class="input" id="input" contenteditable="true" role="textbox" aria-multiline="true"></div>
       <button class="btn" id="sendBtn">Enviar</button>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <small class="typing" id="typingIndicator"></small>
-      <button class="link-btn" id="demoPromo">Testar envio de oferta</button>
     </div>
   </div>
 </div>
 
 <script>
-const AI_ENDPOINT = '/api/ai'; // backend do servidor
-const PROMO_LINK = 'https://go.perfectpay.com.br/PPU38CQ08HP';
-const MESSAGES_BEFORE_PROMO = 4;
-const USE_BROWSER_TTS = true;
-
 const messagesEl = document.getElementById('messages');
 const inputEl = document.getElementById('input');
 const sendBtn = document.getElementById('sendBtn');
-const typingIndicator = document.getElementById('typingIndicator');
-const demoPromo = document.getElementById('demoPromo');
-
-let history = [];
-let totalExchanges = 0;
 
 function appendBubble(text, who='bot', extras={}){
   const b = document.createElement('div');
   b.className = 'bubble ' + (who==='bot' ? 'from-bot' : 'from-me');
-  if(extras.isPromo) b.classList.add('promo');
   if(extras.isAudio){
     const audioWrap = document.createElement('div');
     audioWrap.className='audio';
@@ -84,10 +66,8 @@ function appendBubble(text, who='bot', extras={}){
     const info = document.createElement('div'); info.innerText = extras.caption || 'Áudio';
     audioWrap.appendChild(play); audioWrap.appendChild(info);
     b.appendChild(audioWrap);
-    if(extras.src) {
-      const audioEl = new Audio(extras.src);
-      play.addEventListener('click', ()=>audioEl.play());
-    }
+    const audioEl = new Audio(extras.src);
+    play.addEventListener('click', ()=>audioEl.play());
   } else {
     b.innerHTML = text.replace(/\n/g,'<br>');
   }
@@ -95,59 +75,39 @@ function appendBubble(text, who='bot', extras={}){
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-function setTyping(on){ typingIndicator.innerText = on ? 'digitando...' : ''; }
-
-async function sendMessage(){
-  const text = inputEl.innerText.trim();
-  if(!text) return;
-  appendBubble(text,'me');
-  history.push({role:'user',content:text});
-  inputEl.innerText='';
-  totalExchanges++;
-  setTyping(true);
-  try {
-    const res = await fetch(AI_ENDPOINT,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({message:text,history})
-    });
-    if(!res.ok) throw new Error('Servidor não respondeu');
-    const data = await res.json();
-    const reply = data.reply || 'Desculpe, não entendi.';
-    history.push({role:'assistant',content:reply});
-    appendBubble(reply,'bot');
-    if(USE_BROWSER_TTS) speakAndAttach(reply);
-    if(totalExchanges >= MESSAGES_BEFORE_PROMO) setTimeout(sendPromo, 800);
-  } catch(err){
-    console.error(err);
-    appendBubble('Ocorreu um erro ao conectar com a IA.','bot');
-  } finally{ setTyping(false); }
-}
-
-function sendPromo(){
-  const promoHtml = `Quer aprender a faturar com uma modelo IA? adquira nosso curso agora mesmo, do zero ao avançado e escale uma operação de sucesso.<br><a href="${PROMO_LINK}" target="_blank">Comprar agora</a>`;
-  appendBubble(promoHtml,'bot',{isPromo:true});
-  history.push({role:'assistant',content:promoHtml});
-}
-
-function speakAndAttach(text){
+function speakText(text){
   if(!('speechSynthesis' in window)) return;
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang='pt-BR';
   const voices = speechSynthesis.getVoices();
   const v = voices.find(x=>/pt-BR|brazilian/i.test(x.lang)) || voices[0];
-  if(v) utter.voice = v;
-  utter.onstart = ()=> appendBubble('Áudio enviado','bot',{isAudio:true,caption:'Mensagem de voz',src:''});
+  if(v) utter.voice=v;
   speechSynthesis.speak(utter);
+  appendBubble('Áudio enviado','bot',{isAudio:true,caption:'Mensagem de voz',src:''});
 }
 
-sendBtn.addEventListener('click', sendMessage);
-inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); } });
-demoPromo.addEventListener('click', sendPromo);
+function handleUserMessage(){
+  const text = inputEl.innerText.trim();
+  if(!text) return;
+  appendBubble(text,'me');
+  inputEl.innerText='';
 
-// Mensagem inicial automática
-window.addEventListener('load', ()=> {
-  appendBubble('Oi 👋, eu sou a Melissa Castro. tudo bem?','bot');
+  // Resposta robotizada
+  const reply = "Que ótimo, vou te passar 3 modelos sobre o curso, tá bom?";
+  speakText(reply);
+}
+
+sendBtn.addEventListener('click', handleUserMessage);
+inputEl.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && !e.shiftKey){
+    e.preventDefault();
+    handleUserMessage();
+  }
+});
+
+// Saudação inicial
+window.addEventListener('load', ()=>{
+  appendBubble('Oi 👋, eu sou a Melissa Castro. Posso te ajudar a aprender a faturar com modelos IA. Como posso te ajudar hoje?','bot');
 });
 </script>
 </body>
