@@ -6,27 +6,25 @@
 <title>Chat WhatsApp - Robotizado</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, Arial, sans-serif}
-body{background:#e6f0ef;display:flex;align-items:center;justify-content:center;height:100vh}
-.app{width:420px;height:780px;background:#ffffff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.12);overflow:hidden;display:flex;flex-direction:column}
-.header{height:72px;padding:12px 14px;display:flex;align-items:center;border-bottom:1px solid #e6e6e6}
+body{background:#ece5dd;display:flex;align-items:center;justify-content:center;height:100vh}
+.app{width:420px;height:780px;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.12);display:flex;flex-direction:column;overflow:hidden}
+.header{height:72px;padding:12px 14px;display:flex;align-items:center;border-bottom:1px solid #ddd;background:#ededed}
 .avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;margin-right:12px;flex-shrink:0;background:#ccc}
 .avatar img{width:100%;height:100%;object-fit:cover}
 .meta{flex:1}
-.name{font-weight:600}
-.status{font-size:12px;color:#6b6b6b}
-.messages{flex:1;padding:20px;display:flex;flex-direction:column;gap:12px;overflow:auto;background-image:linear-gradient(180deg, rgba(0,0,0,0.01), transparent)}
-.bubble{max-width:78%;padding:10px 14px;border-radius:18px;line-height:1.35}
-.from-bot{background:#ffffff;border:1px solid #e6e6e6;align-self:flex-start;border-top-left-radius:6px}
-.from-me{background:#dcf8c6;align-self:flex-end;border-top-right-radius:6px}
-.bubble small{display:block;margin-top:6px;font-size:11px;color:#666}
-.composer{height:88px;border-top:1px solid #e6e6e6;padding:10px;display:flex;flex-direction:column;gap:6px}
-.row{display:flex;align-items:center;gap:8px}
-.input{flex:1;background:#f7f7f7;border-radius:20px;padding:10px 14px;min-height:44px;display:flex;align-items:center}
+.name{font-weight:600;font-size:16px;color:#222}
+.status{font-size:12px;color:#666}
+.messages{flex:1;padding:12px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;background:#e5ddd5}
+.bubble{max-width:75%;padding:8px 12px;border-radius:18px;line-height:1.4;word-wrap:break-word;position:relative}
+.from-bot{background:#fff;align-self:flex-start;border-top-left-radius:4px;border-top-right-radius:18px;border-bottom-left-radius:18px;border-bottom-right-radius:18px;box-shadow:0 1px 1px rgba(0,0,0,0.1)}
+.from-me{background:#dcf8c6;align-self:flex-end;border-top-left-radius:18px;border-top-right-radius:4px;border-bottom-left-radius:18px;border-bottom-right-radius:18px;box-shadow:0 1px 1px rgba(0,0,0,0.1)}
+.composer{height:70px;border-top:1px solid #ddd;padding:8px 12px;display:flex;align-items:center;gap:8px;background:#f0f0f0}
+.input{flex:1;background:#fff;border-radius:20px;padding:10px 14px;min-height:44px;display:flex;align-items:center}
 .input[contenteditable]{outline:none}
-.btn{background:#25d366;border-radius:12px;padding:8px 12px;color:white;font-weight:600;border:none;cursor:pointer}
-.typing{font-size:12px;color:#666;margin-left:6px}
+.btn{background:#25d366;border-radius:50%;padding:0 16px;color:white;font-weight:bold;border:none;height:44px;width:44px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px}
 .audio{display:flex;align-items:center;gap:8px}
 .play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #ddd;cursor:pointer;background:#25d366;color:#fff;font-weight:bold}
+.typing{font-size:12px;color:#666;margin-left:6px}
 </style>
 </head>
 <body>
@@ -44,10 +42,8 @@ body{background:#e6f0ef;display:flex;align-items:center;justify-content:center;h
   <div class="messages" id="messages"></div>
 
   <div class="composer">
-    <div class="row">
-      <div class="input" id="input" contenteditable="true" role="textbox" aria-multiline="true"></div>
-      <button class="btn" id="sendBtn">Enviar</button>
-    </div>
+    <div class="input" id="input" contenteditable="true" role="textbox" aria-multiline="true" placeholder="Escreva uma mensagem..."></div>
+    <button class="btn" id="sendBtn">▶</button>
   </div>
 </div>
 
@@ -56,7 +52,7 @@ const messagesEl = document.getElementById('messages');
 const inputEl = document.getElementById('input');
 const sendBtn = document.getElementById('sendBtn');
 
-function appendBubble(text, who='bot', extras={}){
+function appendBubble(text='', who='bot', extras={}){
   const b = document.createElement('div');
   b.className = 'bubble ' + (who==='bot' ? 'from-bot' : 'from-me');
 
@@ -66,13 +62,10 @@ function appendBubble(text, who='bot', extras={}){
     const play = document.createElement('div'); 
     play.className='play'; 
     play.innerText='▶';
-    const info = document.createElement('div'); 
-    info.innerText = extras.caption || 'Mensagem de voz';
-    audioWrap.appendChild(play); 
-    audioWrap.appendChild(info);
+    audioWrap.appendChild(play);
     b.appendChild(audioWrap);
 
-    // Criar Audio dinamicamente com TTS do navegador ao clicar
+    // Áudio somente ao clicar
     play.addEventListener('click', ()=>{
       const utter = new SpeechSynthesisUtterance(extras.text);
       utter.lang='pt-BR';
@@ -81,7 +74,6 @@ function appendBubble(text, who='bot', extras={}){
       if(v) utter.voice=v;
       speechSynthesis.speak(utter);
     });
-
   } else {
     b.innerHTML = text.replace(/\n/g,'<br>');
   }
@@ -96,9 +88,9 @@ function handleUserMessage(){
   appendBubble(text,'me');
   inputEl.innerText='';
 
-  // Resposta robotizada com áudio clicável
-  const reply = "Que ótimo, vou te passar 3 modelos sobre o curso, tá bom?";
-  appendBubble('', 'bot', {isAudio:true, caption:reply, text: reply});
+  // Resposta robotizada com áudio apenas (sem texto)
+  const replyText = "Que ótimo, vou te passar 3 modelos sobre o curso, tá bom?";
+  appendBubble('', 'bot', {isAudio:true, text:replyText});
 }
 
 sendBtn.addEventListener('click', handleUserMessage);
@@ -111,7 +103,7 @@ inputEl.addEventListener('keydown', e=>{
 
 // Saudação inicial
 window.addEventListener('load', ()=>{
-  appendBubble('Oi 👋, eu sou a Melissa Castro. Posso te ajudar a aprender a faturar com modelos IA. Como posso te ajudar hoje?','bot');
+  appendBubble('Oiie, meu amor, tudo bem? eu me chamo Melissa Castro','bot');
 });
 </script>
 </body>
