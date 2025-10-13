@@ -7,54 +7,83 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, Arial, sans-serif}
   body{background:#121b22;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;padding:0}
-  .app{width:100%;max-width:400px;height:calc(100vh - 20px);background:#1e2a33;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.3);display:flex;flex-direction:column;overflow:hidden}
-  .header{height:72px;padding:12px 14px;display:flex;align-items:center;border-bottom:1px solid #2c3e50;position:sticky;top:0;background:#1e2a33;z-index:10}
+  .app{
+    width:100%;
+    max-width:420px;
+    height:90vh;
+    background:#1e2a33;
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+  .header{
+    height:72px;
+    padding:12px 14px;
+    display:flex;
+    align-items:center;
+    border-bottom:1px solid #2c3e50;
+    position:sticky;
+    top:0;
+    background:#1e2a33;
+    z-index:10;
+  }
   .avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;margin-right:12px;flex-shrink:0;background:#ccc}
   .avatar img{width:100%;height:100%;object-fit:cover}
   .meta{flex:1}
   .name{font-weight:600;color:#fff}
   .status{font-size:12px;color:#9aa0a6}
-  .messages{flex:1;padding:12px 16px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;background:#121b22}
+  .messages{
+    flex:1;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    overflow-y:auto;
+    background:#121b22;
+  }
   .messages::-webkit-scrollbar{width:6px}
   .messages::-webkit-scrollbar-track{background:#121b22}
   .messages::-webkit-scrollbar-thumb{background-color:#444;border-radius:3px}
-  .bubble{max-width:75%;padding:10px 14px;border-radius:18px;line-height:1.35;position:relative;word-wrap:break-word}
+  .bubble{max-width:78%;padding:10px 14px;border-radius:18px;line-height:1.35;position:relative;word-wrap: break-word;}
   .from-bot{background:#2c3e50;color:#fff;align-self:flex-start;border-top-left-radius:6px}
   .from-me{background:#25d366;color:#000;align-self:flex-end;border-top-right-radius:6px}
-  .composer{border-top:1px solid #2c3e50;padding:10px;display:flex;flex-direction:column;gap:6px;background:#1e2a33}
+  .composer{
+    border-top:1px solid #2c3e50;
+    padding:10px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    background:#1e2a33
+  }
   .row{display:flex;align-items:center;gap:8px}
   .input{flex:1;background:#2c3e50;border-radius:20px;padding:10px 14px;min-height:44px;display:flex;align-items:center;color:#fff}
   .input[contenteditable]{outline:none}
   .btn{background:#25d366;border-radius:12px;padding:8px 12px;color:white;font-weight:600;border:none;cursor:pointer}
+  .audio{display:flex;align-items:center;gap:8px}
+  .play{
+    width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    border:none;cursor:pointer;background:#25d366;color:#fff;position:relative;overflow:hidden;
+  }
+  .wave{
+    position:absolute;
+    bottom:8px;
+    left:6px;
+    width:4px;
+    height:12px;
+    background:#fff;
+    animation:wave 1s infinite;
+  }
+  .wave:nth-child(2){animation-delay:0.2s; left:12px;}
+  .wave:nth-child(3){animation-delay:0.4s; left:18px;}
+  @keyframes wave{
+    0%,40%,100%{height:4px;}
+    20%{height:12px;}
+  }
   .suggestions-container{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
   .suggestion-btn{background:#25d366;color:white;padding:6px 12px;border-radius:18px;border:none;cursor:pointer;font-weight:600;font-size:14px}
   .checkout-link{display:block;margin-top:6px;color:#4ea5f7;text-decoration:underline;cursor:pointer;font-weight:600;}
-  /* Áudio estilo WhatsApp */
-  .audio{display:flex;align-items:center;gap:6px;cursor:pointer}
-  .play-audio{
-    width:36px;height:36px;border-radius:50%;background:#25d366;display:flex;justify-content:center;align-items:center;color:#fff;position:relative
-  }
-  .play-audio::after{
-    content:'';
-    position:absolute;
-    width:0;height:0;
-    border-left:8px solid #fff;
-    border-top:5px solid transparent;
-    border-bottom:5px solid transparent;
-  }
-  .audio-waves{display:flex;gap:2px;align-items:center}
-  .wave{width:3px;height:6px;background:#fff;border-radius:2px;animation:wave 1s infinite;animation-play-state:paused}
-  .wave:nth-child(2){animation-delay:0.1s;}
-  .wave:nth-child(3){animation-delay:0.2s;}
-  .wave:nth-child(4){animation-delay:0.3s;}
-  .wave:nth-child(5){animation-delay:0.4s;}
-  @keyframes wave{0%,100%{height:4px}50%{height:12px}}
-  /* Digitando animado */
-  .typing-bubble{display:flex;align-items:center;gap:4px;justify-content:flex-start;max-width:50px;height:24px}
-  .dot{width:6px;height:6px;background:#666;border-radius:50%;animation:blink 1s infinite;animation-delay:0s}
-  .dot:nth-child(2){animation-delay:0.2s;}
-  .dot:nth-child(3){animation-delay:0.4s;}
-  @keyframes blink{0%,80%,100%{opacity:0.2}40%{opacity:1}}
 </style>
 </head>
 <body>
@@ -64,7 +93,7 @@
       <img src="https://somosnews.com.mx/wp-content/uploads/2024/02/modelos-triunfan-redes-sociales-inteligencia-artificial.jpg" alt="Melissa">
     </div>
     <div class="meta">
-      <div class="name">Melissa</div>
+      <div class="name">Melissa Castro</div>
       <div class="status" id="status">online</div>
     </div>
   </div>
@@ -85,71 +114,79 @@ const messagesEl = document.getElementById('messages');
 const inputEl = document.getElementById('input');
 const sendBtn = document.getElementById('sendBtn');
 const suggestionsArea = document.getElementById('suggestionsArea');
-const statusEl = document.getElementById('status');
 
-let userResponded=false;
-let firstAutoResponseDone=false;
-let courseOptionsSent=false;
+let userResponded = false;
+let firstAutoResponseDone = false;
 
-function appendBubble(text,who='bot',extras={}){
-  const b=document.createElement('div');
-  b.className='bubble '+(who==='bot'?'from-bot':'from-me');
+function appendBubble(text, who='bot', extras={}){
+  const b = document.createElement('div');
+  b.className = 'bubble ' + (who==='bot' ? 'from-bot' : 'from-me');
 
   if(extras.isAudio){
-    const audioWrap=document.createElement('div'); audioWrap.className='audio';
-    const playBtn=document.createElement('div'); playBtn.className='play-audio';
-    const waves=document.createElement('div'); waves.className='audio-waves';
-    for(let i=0;i<5;i++){const w=document.createElement('div'); w.className='wave'; waves.appendChild(w);}
-    playBtn.addEventListener('click',()=>{
-      const audioEl=new Audio(extras.src); audioEl.play();
-      playBtn.style.pointerEvents='none';
-      waves.querySelectorAll('.wave').forEach(w=>w.style.animationPlayState='running');
+    const audioWrap = document.createElement('div');
+    audioWrap.className = 'audio';
+    const play = document.createElement('button');
+    play.className='play';
+    // criar visualização de ondas
+    play.innerHTML = '<div class="wave"></div><div class="wave"></div><div class="wave"></div>';
+    const audioEl = new Audio(extras.src);
+
+    play.addEventListener('click', ()=>{
+      audioEl.play();
+      play.disabled = true;
       appendSuggestions(['Não, quero comprar o curso']);
     });
-    audioWrap.appendChild(playBtn);
-    audioWrap.appendChild(waves);
+
+    audioWrap.appendChild(play);
     b.appendChild(audioWrap);
   } else if(extras.isCheckout){
-    b.innerHTML=`${text}<a class="checkout-link" href="${extras.link}" target="_blank">Clique aqui para comprar</a>`;
+    b.innerHTML = `${text}<a class="checkout-link" href="${extras.link}" target="_blank">Clique aqui para comprar</a>`;
     appendSuggestions(['Escolher outras opções']);
-  } else { b.innerHTML=text.replace(/\n/g,'<br>'); }
+  } else {
+    b.innerHTML = text.replace(/\n/g,'<br>');
+  }
 
   messagesEl.appendChild(b);
-  messagesEl.scrollTop=messagesEl.scrollHeight;
+  messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
 function appendSuggestions(options){
   suggestionsArea.innerHTML='';
   options.forEach(opt=>{
-    const btn=document.createElement('button');
+    const btn = document.createElement('button');
     btn.className='suggestion-btn';
     btn.innerText=opt;
-    btn.addEventListener('click',async ()=>{
+    btn.addEventListener('click', async ()=>{
       appendBubble(opt,'me');
       suggestionsArea.innerHTML='';
       await handleResponse(opt);
     });
     suggestionsArea.appendChild(btn);
   });
-  messagesEl.scrollTop=messagesEl.scrollHeight;
+  messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-function showTyping(duration=1200){
-  const typingBubble=document.createElement('div');
-  typingBubble.className='bubble from-bot'; typingBubble.id='typingBubble';
-  typingBubble.innerHTML=`<div class="typing-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+async function showTyping(duration=1200){
+  const typingBubble = document.createElement('div');
+  typingBubble.className = 'bubble from-bot';
+  typingBubble.innerHTML = 'digitando...';
   messagesEl.appendChild(typingBubble);
-  messagesEl.scrollTop=messagesEl.scrollHeight;
-  return new Promise(resolve=>{ setTimeout(()=>{ typingBubble.remove(); resolve(); },duration); });
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  return new Promise(resolve=>{
+    setTimeout(()=>{
+      typingBubble.remove();
+      resolve();
+    }, duration);
+  });
 }
 
 async function handleResponse(text){
-  const lowerText=text.toLowerCase();
+  const lowerText = text.toLowerCase();
 
   if(lowerText==='escolher outras opções'){
     await showTyping();
     appendBubble('Ah perfeito meu amor, qual você gostaria então. O Hot Starter, Hot Essential ou Hot Founder?','bot');
-    setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),500);
+    appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']);
     return;
   }
 
@@ -165,7 +202,7 @@ async function handleResponse(text){
   }
 
   if(!firstAutoResponseDone){
-    firstAutoResponseDone=true;
+    firstAutoResponseDone = true;
     await showTyping();
     appendBubble('Ótimo, vou te enviar alguns detalhes sobre o curso','bot');
     await showTyping();
@@ -173,25 +210,34 @@ async function handleResponse(text){
       'Temos 3 modelos de curso, sendo o Hot Starter, onde você vai aprender o básico como criar sua própria modelo do job; o Hot Essential, onde você aprenderá do básico ao avançado e receberá todos os links e dicas valiosas; e, por fim, para uma estrutura sólida e escalável, temos o Hot Founder, onde você aprenderá tudo inclusive criar sua modelo com IA. Qual dos 3 você tem interesse?',
       'bot'
     );
-    setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),500);
-    courseOptionsSent=true;
+    appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']);
   }
 }
 
 function sendMessage(){
-  const text=inputEl.innerText.trim(); if(!text) return;
-  appendBubble(text,'me'); inputEl.value=''; inputEl.innerText='';
+  const text = inputEl.innerText.trim();
+  if(!text) return;
+  appendBubble(text,'me');
+  inputEl.innerText='';
 
   if(!userResponded){
-    userResponded=true;
-    setTimeout(()=>{ appendBubble(null,'bot',{isAudio:true, src:'https://drive.google.com/file/d/1PE5xWkwNw_RSkHvXwrnDObbsH1CaZNdO/view?usp=drive_link'}); },800);
-  } else handleResponse(text);
+    userResponded = true;
+    setTimeout(()=>{
+      appendBubble(null,'bot',{isAudio:true, src:'https://drive.google.com/uc?export=download&id=1PE5xWkwNw_RSkHvXwrnDObbsH1CaZNdO'});
+    }, 800);
+  } else {
+    handleResponse(text);
+  }
 }
 
-sendBtn.addEventListener('click',sendMessage);
-inputEl.addEventListener('keydown',e=>{ if(e.key==='Enter' && !e.shiftKey){e.preventDefault();sendMessage();} });
+sendBtn.addEventListener('click', sendMessage);
+inputEl.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && !e.shiftKey){e.preventDefault(); sendMessage();}
+});
 
-window.addEventListener('load',()=>{ appendBubble('Oiie meu amor, tudo bem? eu me chamo Melissa.','bot'); });
+window.addEventListener('load', ()=>{
+  appendBubble('Oiie meu amor, tudo bem? eu me chamo Melissa.','bot');
+});
 </script>
 </body>
 </html>
