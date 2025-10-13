@@ -61,8 +61,16 @@
   .input{flex:1;background:#2c3e50;border-radius:20px;padding:6px 10px;min-height:36px;display:flex;align-items:center;color:#fff;font-size:13px}
   .input[contenteditable]{outline:none}
   .btn{background:#25d366;border-radius:12px;padding:6px 10px;color:white;font-weight:600;border:none;cursor:pointer;font-size:12px}
-  
-  /* 🔊 ESTILO NOVO DO ÁUDIO */
+  .suggestions-container{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+  .suggestion-btn{background:#25d366;color:white;padding:4px 10px;border-radius:16px;border:none;cursor:pointer;font-weight:600;font-size:12px}
+  .checkout-link{display:block;margin-top:4px;color:#4ea5f7;text-decoration:underline;cursor:pointer;font-weight:600;font-size:13px;}
+  .typing-bubble{display:flex;align-items:center;gap:3px;justify-content:flex-start;max-width:40px; height:20px;}
+  .dot{width:5px;height:5px;background:#666;border-radius:50%;animation:blink 1s infinite;animation-delay:0s;}
+  .dot:nth-child(2){animation-delay:0.2s;}
+  .dot:nth-child(3){animation-delay:0.4s;}
+  @keyframes blink{0%,80%,100%{opacity:0.2}40%{opacity:1}}
+
+  /* 🔊 --- ÁUDIO ESTÉTICO (WhatsApp Style) --- */
   .audio{
     display:flex;
     align-items:center;
@@ -97,7 +105,6 @@
     );
     border-radius:4px;
     opacity:0.8;
-    position:relative;
   }
   .profile-audio{
     width:34px;
@@ -111,15 +118,6 @@
     height:100%;
     object-fit:cover;
   }
-
-  .suggestions-container{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
-  .suggestion-btn{background:#25d366;color:white;padding:4px 10px;border-radius:16px;border:none;cursor:pointer;font-weight:600;font-size:12px}
-  .checkout-link{display:block;margin-top:4px;color:#4ea5f7;text-decoration:underline;cursor:pointer;font-weight:600;font-size:13px;}
-  .typing-bubble{display:flex;align-items:center;gap:3px;justify-content:flex-start;max-width:40px; height:20px;}
-  .dot{width:5px;height:5px;background:#666;border-radius:50%;animation:blink 1s infinite;animation-delay:0s;}
-  .dot:nth-child(2){animation-delay:0.2s;}
-  .dot:nth-child(3){animation-delay:0.4s;}
-  @keyframes blink{0%,80%,100%{opacity:0.2}40%{opacity:1}}
 </style>
 </head>
 <body>
@@ -177,33 +175,40 @@ function appendBubble(text, who='bot', extras={}){
   b.className = 'bubble ' + (who==='bot' ? 'from-bot' : 'from-me');
 
   if(extras.isAudio){
+    /* 🔊 Estilo WhatsApp */
     const audioWrap = document.createElement('div');
     audioWrap.className = 'audio';
 
     const play = document.createElement('div');
-    play.className='play';
-    play.innerHTML='▶';
+    play.className = 'play';
+    play.innerHTML = '▶';
+
     const waveform = document.createElement('div');
-    waveform.className='waveform';
+    waveform.className = 'waveform';
+
     const profile = document.createElement('div');
-    profile.className='profile-audio';
-    profile.innerHTML='<img src="https://somosnews.com.mx/wp-content/uploads/2024/02/modelos-triunfan-redes-sociales-inteligencia-artificial.jpg" alt="Melissa">';
+    profile.className = 'profile-audio';
+    profile.innerHTML = `<img src="https://somosnews.com.mx/wp-content/uploads/2024/02/modelos-triunfan-redes-sociales-inteligencia-artificial.jpg" alt="Melissa">`;
 
     const audioEl = new Audio(extras.src);
+
     play.addEventListener('click', ()=>{
       audioEl.play();
-      play.style.opacity='0.6';
       play.style.pointerEvents='none';
+      play.style.opacity='0.6';
+      appendSuggestions(['Não, quero comprar o curso']);
     });
 
     audioWrap.appendChild(play);
     audioWrap.appendChild(waveform);
     audioWrap.appendChild(profile);
     b.appendChild(audioWrap);
-  } else if(extras.isCheckout){
+  } 
+  else if(extras.isCheckout){
     b.innerHTML = `${text}<a class="checkout-link" href="${extras.link}" target="_blank">Clique aqui para comprar</a>`;
     appendSuggestions(['Escolher outras opções']);
-  } else {
+  } 
+  else {
     b.innerHTML = text.replace(/\n/g,'<br>');
   }
 
