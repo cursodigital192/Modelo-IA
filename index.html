@@ -1,214 +1,154 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chat WhatsApp IA</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: "Inter", sans-serif;
-      background-color: #ece5dd;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .container {
-      width: 400px;
-      height: 700px;
-      background-color: #fff;
-      border-radius: 15px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .header {
-      background-color: #075e54;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      padding: 10px;
-    }
-
-    .avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      overflow: hidden;
-      margin-right: 10px;
-      flex-shrink: 0;
-    }
-
-    .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .header-info h2 {
-      margin: 0;
-      font-size: 16px;
-    }
-
-    .header-info p {
-      margin: 0;
-      font-size: 12px;
-      color: #dcdcdc;
-    }
-
-    .messages {
-      flex: 1;
-      padding: 10px;
-      background-image: url("https://i.imgur.com/fu1UDuW.png");
-      background-size: cover;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .message {
-      max-width: 80%;
-      margin-bottom: 10px;
-      padding: 8px 12px;
-      border-radius: 7.5px;
-      line-height: 1.4;
-      font-size: 14px;
-    }
-
-    .received {
-      background-color: #fff;
-      align-self: flex-start;
-    }
-
-    .sent {
-      background-color: #dcf8c6;
-      align-self: flex-end;
-    }
-
-    .input-area {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      background-color: #f0f0f0;
-    }
-
-    .input-area input {
-      flex: 1;
-      border: none;
-      border-radius: 20px;
-      padding: 10px 15px;
-      font-size: 14px;
-      outline: none;
-    }
-
-    .input-area button {
-      margin-left: 10px;
-      background-color: #25d366;
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      color: #fff;
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    .promo {
-      background-color: #fff8e1;
-      border: 1px solid #ffd54f;
-    }
-
-    a {
-      color: #075e54;
-      text-decoration: none;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chat WhatsApp - Simulado (IA)</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, Arial, sans-serif}
+body{background:#e6f0ef;display:flex;align-items:center;justify-content:center;height:100vh}
+.app{width:420px;height:780px;background:#ffffff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.12);overflow:hidden;display:flex;flex-direction:column}
+.header{height:72px;padding:12px 14px;display:flex;align-items:center;border-bottom:1px solid #e6e6e6}
+.avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;margin-right:12px;flex-shrink:0;background:#ccc}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.meta{flex:1}
+.name{font-weight:600}
+.status{font-size:12px;color:#6b6b6b}
+.messages{flex:1;padding:20px;display:flex;flex-direction:column;gap:12px;overflow:auto;background-image:linear-gradient(180deg, rgba(0,0,0,0.01), transparent)}
+.bubble{max-width:78%;padding:10px 14px;border-radius:18px;line-height:1.35}
+.from-bot{background:#ffffff;border:1px solid #e6e6e6;align-self:flex-start;border-top-left-radius:6px}
+.from-me{background:#dcf8c6;align-self:flex-end;border-top-right-radius:6px}
+.bubble small{display:block;margin-top:6px;font-size:11px;color:#666}
+.composer{height:88px;border-top:1px solid #e6e6e6;padding:10px;display:flex;flex-direction:column;gap:6px}
+.row{display:flex;align-items:center;gap:8px}
+.input{flex:1;background:#f7f7f7;border-radius:20px;padding:10px 14px;min-height:44px;display:flex;align-items:center}
+.input[contenteditable]{outline:none}
+.btn{background:#25d366;border-radius:12px;padding:8px 12px;color:white;font-weight:600;border:none;cursor:pointer}
+.link-btn{background:transparent;color:#007aff;border:1px solid #e0e0e0;padding:6px 8px;border-radius:8px}
+.typing{font-size:12px;color:#666;margin-left:6px}
+.audio{display:flex;align-items:center;gap:8px}
+.play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #ddd}
+.promo{background:#fff8e6;border:1px solid #ffd28a;padding:10px;border-radius:12px}
+.promo a{display:inline-block;margin-top:8px;background:#ff8c00;padding:8px 12px;color:#fff;border-radius:8px;text-decoration:none}
+</style>
 </head>
-
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="avatar" id="avatar">
-        <!-- FOTO PADRÃO -->
-        <img src="https://files.oaiusercontent.com/file-000000006b60620eab87c0287d8a4cf1/SnapInsta.to_473620269_1155812946101091_5036196859446970365_n.jpg" alt="Melissa Castro" />
-      </div>
-      <div class="header-info">
-        <h2>Melissa Castro</h2>
-        <p>online</p>
-      </div>
+<div class="app">
+  <div class="header">
+    <div class="avatar">
+      <img src="https://osegredo.com.br/wp-content/uploads/2024/01/Emily-Pellegrini-1.jpg" alt="Melissa Castro">
     </div>
-
-    <div class="messages" id="messages">
-      <div class="message received">
-        Oi 👋, eu sou a Melissa Castro. Posso te ajudar a aprender a faturar com modelos IA. Como posso te ajudar hoje?
-      </div>
-    </div>
-
-    <div class="input-area">
-      <input type="text" id="userInput" placeholder="Digite sua mensagem..." />
-      <button id="sendBtn">➤</button>
+    <div class="meta">
+      <div class="name">Melissa Castro</div>
+      <div class="status" id="status">online</div>
     </div>
   </div>
 
-  <script>
-    const messages = document.getElementById("messages");
-    const userInput = document.getElementById("userInput");
-    const sendBtn = document.getElementById("sendBtn");
+  <div class="messages" id="messages"></div>
 
-    let messageCount = 0;
-    const promoLimit = 4;
-    const promoLink = "https://go.perfectpay.com.br/PPU38CQ08HP";
+  <div class="composer">
+    <div class="row">
+      <div class="input" id="input" contenteditable="true" role="textbox" aria-multiline="true" placeholder="Escreva uma mensagem..."></div>
+      <button class="btn" id="sendBtn">Enviar</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <small class="typing" id="typingIndicator"></small>
+      <button class="link-btn" id="demoPromo">Testar envio de oferta</button>
+    </div>
+  </div>
+</div>
 
-    sendBtn.addEventListener("click", sendMessage);
-    userInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") sendMessage();
+<script>
+const AI_ENDPOINT = '/api/ai'; // backend do servidor
+const PROMO_LINK = 'https://go.perfectpay.com.br/PPU38CQ08HP';
+const MESSAGES_BEFORE_PROMO = 4;
+const USE_BROWSER_TTS = true;
+
+const messagesEl = document.getElementById('messages');
+const inputEl = document.getElementById('input');
+const sendBtn = document.getElementById('sendBtn');
+const typingIndicator = document.getElementById('typingIndicator');
+const demoPromo = document.getElementById('demoPromo');
+
+let history = [];
+let totalExchanges = 0;
+
+function appendBubble(text, who='bot', extras={}){
+  const b = document.createElement('div');
+  b.className = 'bubble ' + (who==='bot' ? 'from-bot' : 'from-me');
+  if(extras.isPromo) b.classList.add('promo');
+  if(extras.isAudio){
+    const audioWrap = document.createElement('div');
+    audioWrap.className='audio';
+    const play = document.createElement('div'); play.className='play'; play.innerText='▶';
+    const info = document.createElement('div'); info.innerText = extras.caption || 'Áudio';
+    audioWrap.appendChild(play); audioWrap.appendChild(info);
+    b.appendChild(audioWrap);
+    if(extras.src) {
+      const audioEl = new Audio(extras.src);
+      play.addEventListener('click', ()=>audioEl.play());
+    }
+  } else {
+    b.innerHTML = text.replace(/\n/g,'<br>');
+  }
+  messagesEl.appendChild(b);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function setTyping(on){ typingIndicator.innerText = on ? 'digitando...' : ''; }
+
+async function sendMessage(){
+  const text = inputEl.innerText.trim();
+  if(!text) return;
+  appendBubble(text,'me');
+  history.push({role:'user',content:text});
+  inputEl.innerText='';
+  totalExchanges++;
+  setTyping(true);
+  try {
+    const res = await fetch(AI_ENDPOINT,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:text,history})
     });
+    if(!res.ok) throw new Error('Servidor não respondeu');
+    const data = await res.json();
+    const reply = data.reply || 'Desculpe, não entendi.';
+    history.push({role:'assistant',content:reply});
+    appendBubble(reply,'bot');
+    if(USE_BROWSER_TTS) speakAndAttach(reply);
+    if(totalExchanges >= MESSAGES_BEFORE_PROMO) setTimeout(sendPromo, 800);
+  } catch(err){
+    console.error(err);
+    appendBubble('Ocorreu um erro ao conectar com a IA.','bot');
+  } finally{ setTyping(false); }
+}
 
-    function sendMessage() {
-      const text = userInput.value.trim();
-      if (text === "") return;
+function sendPromo(){
+  const promoHtml = `Quer aprender a faturar com uma modelo IA? adquira nosso curso agora mesmo, do zero ao avançado e escale uma operação de sucesso.<br><a href="${PROMO_LINK}" target="_blank">Comprar agora</a>`;
+  appendBubble(promoHtml,'bot',{isPromo:true});
+  history.push({role:'assistant',content:promoHtml});
+}
 
-      appendMessage(text, "sent");
-      userInput.value = "";
-      messageCount++;
+function speakAndAttach(text){
+  if(!('speechSynthesis' in window)) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang='pt-BR';
+  const voices = speechSynthesis.getVoices();
+  const v = voices.find(x=>/pt-BR|brazilian/i.test(x.lang)) || voices[0];
+  if(v) utter.voice = v;
+  utter.onstart = ()=> appendBubble('Áudio enviado','bot',{isAudio:true,caption:'Mensagem de voz',src:''});
+  speechSynthesis.speak(utter);
+}
 
-      setTimeout(() => {
-        botReply(text);
-      }, 700);
-    }
+sendBtn.addEventListener('click', sendMessage);
+inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); } });
+demoPromo.addEventListener('click', sendPromo);
 
-    function appendMessage(text, type, isPromo = false) {
-      const msg = document.createElement("div");
-      msg.classList.add("message", type);
-      if (isPromo) msg.classList.add("promo");
-      msg.innerHTML = text;
-      messages.appendChild(msg);
-      messages.scrollTop = messages.scrollHeight;
-    }
-
-    function botReply(userText) {
-      if (messageCount >= promoLimit) {
-        appendMessage(
-          `Quer aprender a faturar com uma modelo IA? 💰<br>Adquira nosso curso agora mesmo e aprenda do zero ao avançado a criar operações de sucesso.<br><br><a href="${promoLink}" target="_blank">👉 Comprar agora</a>`,
-          "received",
-          true
-        );
-        messageCount = 0;
-      } else {
-        const replies = [
-          "Interessante! Me conte mais sobre o que você quer aprender.",
-          "Legal 😄, posso te ajudar com isso!",
-          "Certo! Você já tem experiência com inteligência artificial?",
-          "Boa pergunta! Quer que eu te explique como funciona?",
-        ];
-        const reply = replies[Math.floor(Math.random() * replies.length)];
-        appendMessage(reply, "received");
-      }
-    }
-  </script>
+// Mensagem inicial automática
+window.addEventListener('load', ()=> {
+  appendBubble('Oi 👋, eu sou a Melissa Castro. Posso te ajudar a aprender a faturar com modelos IA. Como posso te ajudar hoje?','bot');
+});
+</script>
 </body>
 </html>
