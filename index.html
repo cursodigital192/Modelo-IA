@@ -2,32 +2,67 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Chat WhatsApp - Simulado Dark</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+<title>Chat WhatsApp - Simulado (IA)</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, Arial, sans-serif}
-  body{background:#121b22;display:flex;align-items:center;justify-content:center;height:100vh}
-  .app{width:100%;max-width:420px;height:calc(100vh - 20px);background:#1e2a33;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.3);display:flex;flex-direction:column;overflow:hidden}
-  .header{height:72px;padding:12px 14px;display:flex;align-items:center;border-bottom:1px solid #2c3e50;position:sticky;top:0;background:#1e2a33;z-index:10}
+  body{background:#121b22;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;padding:0}
+  .app{
+    width:100%;
+    max-width:420px;
+    height:calc(100vh - 10px); /* Altura responsiva */
+    background:#1e2a33;
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+  .header{
+    height:72px;
+    padding:12px 14px;
+    display:flex;
+    align-items:center;
+    border-bottom:1px solid #2c3e50;
+    position:sticky;
+    top:0;
+    background:#1e2a33;
+    z-index:10;
+  }
   .avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;margin-right:12px;flex-shrink:0;background:#ccc}
   .avatar img{width:100%;height:100%;object-fit:cover}
   .meta{flex:1}
   .name{font-weight:600;color:#fff}
   .status{font-size:12px;color:#9aa0a6}
-  .messages{flex:1;padding:20px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;background:#121b22}
+  .messages{
+    flex:1;
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    overflow-y:auto;
+    background:#121b22;
+  }
   .messages::-webkit-scrollbar{width:6px}
   .messages::-webkit-scrollbar-track{background:#121b22}
   .messages::-webkit-scrollbar-thumb{background-color:#444;border-radius:3px}
   .bubble{max-width:78%;padding:10px 14px;border-radius:18px;line-height:1.35;position:relative;word-wrap: break-word;}
   .from-bot{background:#2c3e50;color:#fff;align-self:flex-start;border-top-left-radius:6px}
   .from-me{background:#25d366;color:#000;align-self:flex-end;border-top-right-radius:6px}
-  .composer{border-top:1px solid #2c3e50;padding:10px;display:flex;flex-direction:column;gap:6px;background:#1e2a33}
+  .composer{
+    border-top:1px solid #2c3e50;
+    padding:10px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    background:#1e2a33
+  }
   .row{display:flex;align-items:center;gap:8px}
   .input{flex:1;background:#2c3e50;border-radius:20px;padding:10px 14px;min-height:44px;display:flex;align-items:center;color:#fff}
   .input[contenteditable]{outline:none}
   .btn{background:#25d366;border-radius:12px;padding:8px 12px;color:white;font-weight:600;border:none;cursor:pointer}
   .audio{display:flex;align-items:center;gap:8px}
-  .play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #2c3e50;cursor:pointer;background:#25d366;color:white}
+  .play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #25d366;cursor:pointer;color:#fff;background:#25d366}
   .suggestions-container{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
   .suggestion-btn{background:#25d366;color:white;padding:6px 12px;border-radius:18px;border:none;cursor:pointer;font-weight:600;font-size:14px}
   .checkout-link{display:block;margin-top:6px;color:#4ea5f7;text-decoration:underline;cursor:pointer;font-weight:600;}
@@ -67,11 +102,15 @@ const messagesEl = document.getElementById('messages');
 const inputEl = document.getElementById('input');
 const sendBtn = document.getElementById('sendBtn');
 const suggestionsArea = document.getElementById('suggestionsArea');
+const statusEl = document.getElementById('status');
 
 let userResponded = false;
 let firstAutoResponseDone = false;
+let courseOptionsSent = false;
 
+// Função para mostrar "digitando..." com três pontinhos animados
 function showTyping(duration = 1200){
+  statusEl.innerText = 'digitando...';
   const typingBubble = document.createElement('div');
   typingBubble.className = 'bubble from-bot';
   typingBubble.id = 'typingBubble';
@@ -81,6 +120,7 @@ function showTyping(duration = 1200){
   return new Promise(resolve=>{
     setTimeout(()=>{
       typingBubble.remove();
+      statusEl.innerText = 'online';
       resolve();
     }, duration);
   });
@@ -95,14 +135,15 @@ function appendBubble(text, who='bot', extras={}){
     audioWrap.className = 'audio';
     const play = document.createElement('div');
     play.className='play';
-    play.innerText='▶';
     const audioEl = new Audio(extras.src);
+
     play.addEventListener('click', ()=>{
       audioEl.play();
       play.style.pointerEvents='none';
       play.style.opacity='0.6';
       appendSuggestions(['Não, quero comprar o curso']);
     });
+
     audioWrap.appendChild(play);
     b.appendChild(audioWrap);
   } else if(extras.isCheckout){
@@ -163,6 +204,7 @@ async function handleResponse(text){
       'bot'
     );
     setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),500);
+    courseOptionsSent = true;
   }
 }
 
@@ -170,8 +212,8 @@ function sendMessage(){
   const text = inputEl.innerText.trim();
   if(!text) return;
   appendBubble(text,'me');
-  inputEl.value='';
-  inputEl.innerText='';
+  inputEl.value = '';
+  inputEl.innerText = '';
 
   if(!userResponded){
     userResponded = true;
