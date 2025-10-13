@@ -280,7 +280,23 @@ async function handleResponse(text){
       'Temos 3 modelos de curso, sendo o Hot Starter, onde você vai aprender o básico como criar sua própria modelo do job; o Hot Essential, onde você aprenderá do básico ao avançado e receberá todos os links e dicas valiosas; e, por fim, para uma estrutura sólida e escalável, temos o Hot Founder, onde você aprenderá tudo inclusive criar sua modelo com IA. Qual dos 3 você tem interesse?',
       'bot'
     );
-    setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),400);
+
+    // ✅ Mensagens adicionais com links de vídeos
+    setTimeout(async ()=>{
+      await showTyping();
+      appendBubble('Vou te mandar 3 links de vídeos para você saber o que vai adquirir no curso','bot');
+
+      await showTyping();
+      appendBubble('<a href="https://youtu.be/9IUyZMgRtFs" target="_blank">https://youtu.be/9IUyZMgRtFs</a>','bot');
+
+      await showTyping();
+      appendBubble('<a href="https://youtu.be/veENgsiL_DA" target="_blank">https://youtu.be/veENgsiL_DA</a>','bot');
+
+      await showTyping();
+      appendBubble('<a href="https://studio.youtube.com/video/rzvbOZZZad0/edit" target="_blank">https://studio.youtube.com/video/rzvbOZZZad0/edit</a>','bot');
+
+      setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),400);
+    }, 500);
   }
 }
 
