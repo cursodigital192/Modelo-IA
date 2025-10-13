@@ -18,14 +18,14 @@
   .bubble{max-width:78%;padding:10px 14px;border-radius:18px;line-height:1.35;position:relative}
   .from-bot{background:#ffffff;border:1px solid #e6e6e6;align-self:flex-start;border-top-left-radius:6px}
   .from-me{background:#dcf8c6;align-self:flex-end;border-top-right-radius:6px}
-  .composer{height:88px;border-top:1px solid #e6e6e6;padding:10px;display:flex;flex-direction:column;gap:6px}
+  .composer{border-top:1px solid #e6e6e6;padding:10px;display:flex;flex-direction:column;gap:6px}
   .row{display:flex;align-items:center;gap:8px}
   .input{flex:1;background:#f7f7f7;border-radius:20px;padding:10px 14px;min-height:44px;display:flex;align-items:center}
   .input[contenteditable]{outline:none}
   .btn{background:#25d366;border-radius:12px;padding:8px 12px;color:white;font-weight:600;border:none;cursor:pointer}
   .audio{display:flex;align-items:center;gap:8px}
   .play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #ddd;cursor:pointer}
-  .suggestions{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+  .suggestions-container{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
   .suggestion-btn{background:#25d366;color:white;padding:6px 12px;border-radius:18px;border:none;cursor:pointer;font-weight:600;font-size:14px}
 </style>
 </head>
@@ -44,6 +44,9 @@
   <div class="messages" id="messages"></div>
 
   <div class="composer">
+    <!-- container para sugestões -->
+    <div id="suggestionsArea" class="suggestions-container"></div>
+
     <div class="row">
       <div class="input" id="input" contenteditable="true" role="textbox" aria-multiline="true" placeholder="Escreva uma mensagem..."></div>
       <button class="btn" id="sendBtn">Enviar</button>
@@ -55,6 +58,7 @@
 const messagesEl = document.getElementById('messages');
 const inputEl = document.getElementById('input');
 const sendBtn = document.getElementById('sendBtn');
+const suggestionsArea = document.getElementById('suggestionsArea');
 
 let userResponded = false;
 
@@ -75,7 +79,7 @@ function appendBubble(text, who='bot', extras={}){
       audioEl.play();
       play.style.pointerEvents='none';
       play.style.opacity='0.6';
-      // adicionar sugestão de mensagem após clicar no play
+      // adicionar sugestão após clicar no play
       appendSuggestions(['Não, quero comprar o curso']);
     });
 
@@ -91,8 +95,8 @@ function appendBubble(text, who='bot', extras={}){
 
 // função para criar sugestões de resposta
 function appendSuggestions(options){
-  const container = document.createElement('div');
-  container.className='suggestions';
+  // limpar sugestões antigas
+  suggestionsArea.innerHTML='';
   options.forEach(opt=>{
     const btn = document.createElement('button');
     btn.className='suggestion-btn';
@@ -100,11 +104,10 @@ function appendSuggestions(options){
     btn.addEventListener('click', ()=>{
       appendBubble(opt,'me');
       handleResponse(opt);
-      container.remove();
+      suggestionsArea.innerHTML=''; // remove sugestões após clique
     });
-    container.appendChild(btn);
+    suggestionsArea.appendChild(btn);
   });
-  messagesEl.appendChild(container);
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
@@ -141,7 +144,7 @@ inputEl.addEventListener('keydown', e=>{
 
 // mensagem inicial
 window.addEventListener('load', ()=>{
-  appendBubble('Oiie meu amor, tudo bem?? eu me chamo Melissa.','bot');
+  appendBubble('Oiie meu amor, tudo bem? eu me chamo Melissa.','bot');
 });
 </script>
 </body>
