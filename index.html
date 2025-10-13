@@ -27,6 +27,7 @@
   .play{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid #ddd;cursor:pointer}
   .suggestions-container{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
   .suggestion-btn{background:#25d366;color:white;padding:6px 12px;border-radius:18px;border:none;cursor:pointer;font-weight:600;font-size:14px}
+  .checkout-link{display:block;margin-top:6px;color:#007aff;text-decoration:underline;cursor:pointer;font-weight:600;}
 </style>
 </head>
 <body>
@@ -81,12 +82,13 @@ function appendBubble(text, who='bot', extras={}){
       audioEl.play();
       play.style.pointerEvents='none';
       play.style.opacity='0.6';
-      // adicionar sugestões iniciais após clicar no play
       appendSuggestions(['Não, quero comprar o curso']);
     });
 
     audioWrap.appendChild(play);
     b.appendChild(audioWrap);
+  } else if(extras.isCheckout){
+    b.innerHTML = `${text}<a class="checkout-link" href="${extras.link}" target="_blank">Clique aqui para comprar</a>`;
   } else {
     b.innerHTML = text.replace(/\n/g,'<br>');
   }
@@ -114,6 +116,21 @@ function appendSuggestions(options){
 
 // função para lidar com qualquer resposta
 function handleResponse(text){
+  if(courseOptionsSent){
+    // resposta específica para cada curso
+    let link = '';
+    if(text.toLowerCase() === 'hot starter') link = 'https://go.perfectpay.com.br/PPU38CQ08HP';
+    else if(text.toLowerCase() === 'hot essential') link = 'https://go.perfectpay.com.br/PPU38CQ08I2';
+    else if(text.toLowerCase() === 'hot founder') link = 'https://go.perfectpay.com.br/PPU38CQ08I3';
+
+    if(link){
+      setTimeout(()=>{
+        appendBubble('Ótima escolha, vou te enviar o link checkout para você iniciar suas operações agora mesmo!','bot',{isCheckout:true, link:link});
+      },500);
+    }
+    return;
+  }
+
   setTimeout(()=>{
     appendBubble('Ótimo, vou te enviar alguns detalhes sobre o curso','bot');
   },500);
@@ -126,17 +143,12 @@ function handleResponse(text){
         'bot'
       );
 
-      // adicionar sugestões dos cursos
       setTimeout(()=>{
         appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']);
         courseOptionsSent = true;
       }, 500);
 
     }, 1500);
-  } else if(courseOptionsSent){
-    setTimeout(()=>{
-      appendBubble('Ótimo, vou te enviar alguns detalhes sobre o curso escolhido!','bot');
-    }, 500);
   }
 }
 
@@ -166,7 +178,7 @@ inputEl.addEventListener('keydown', e=>{
 
 // mensagem inicial
 window.addEventListener('load', ()=>{
-  appendBubble('Oiie meu amor, tudo bem?? eu me chamo Melissa.','bot');
+  appendBubble('Oiie meu amor, tudo bem? eu me chamo Melissa.','bot');
 });
 </script>
 </body>
