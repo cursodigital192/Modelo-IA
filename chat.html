@@ -128,7 +128,7 @@
       <img src="https://somosnews.com.mx/wp-content/uploads/2024/02/modelos-triunfan-redes-sociales-inteligencia-artificial.jpg" alt="Melissa">
     </div>
     <div class="meta">
-      <div class="name">Melissa Castro</div>
+      <div class="name">Melissa Castro - Modelo IA</div>
       <div class="status" id="status">online</div>
     </div>
   </div>
@@ -191,7 +191,7 @@ function appendBubble(text, who='bot', extras={}){
       audioEl.play();
       play.style.pointerEvents='none';
       play.style.opacity='0.6';
-      appendSuggestions(['Não, quero comprar o curso', 'Como funciona o curso?']);
+      appendSuggestions(['Quero comprar o curso', 'Como funciona o curso?']);
     });
 
     audioWrap.appendChild(play);
@@ -232,7 +232,7 @@ async function handleResponse(text){
 
   if(lowerText==='como funciona o curso?'){
     await showTyping();
-    appendBubble('Vou te explicar meu bem 💚 O curso te ensina a criar uma modelo do job do zero. Você vai adquirir links, dicas e o passo a passo completo para montar sua operação e começar a faturar. No curso Founder, você aprende inclusive a criar sua própria modelo com IA. Vamos iniciar o curso?','bot');
+    appendBubble('Vou te explicar meu bem 💚 O curso te ensina a criar uma modelo do zero. Você vai adquirir links, dicas e o passo a passo completo para montar sua operação e começar a faturar. No curso profissional, você aprende inclusive a criar sua própria modelo com IA. Vamos monetizar sua modelo? Escolha uma das opções abaixo!','bot');
     
     // Novo trecho: envia os vídeos logo em seguida
     setTimeout(async ()=>{
@@ -244,7 +244,7 @@ async function handleResponse(text){
       appendBubble('<a href="https://youtu.be/veENgsiL_DA" target="_blank">https://youtu.be/veENgsiL_DA</a>','bot');
       await showTyping();
       appendBubble('<a href="https://youtu.be/rzvbOZZZad0" target="_blank">https://youtu.be/rzvbOZZZad0</a>','bot');
-      setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),400);
+      setTimeout(()=>appendSuggestions(['Curso Iniciante','Curso Essential','Curso Profissional']),400);
     },600);
     return;
   }
@@ -311,7 +311,7 @@ inputEl.addEventListener('keydown', e=>{
 });
 
 window.addEventListener('load', ()=>{
-  appendBubble('Oiie meu amor, tudo bem?? 💚','bot');
+  appendBubble('Oiie meu amor, eu me chamo Melissa. Quer aprender a criar uma modelo igual a mim para o Instagram? 💚','bot');
 });
 </script>
 </body>
