@@ -191,7 +191,6 @@ function appendBubble(text, who='bot', extras={}){
       audioEl.play();
       play.style.pointerEvents='none';
       play.style.opacity='0.6';
-      // ADICIONADAS DUAS OPÇÕES AQUI 👇
       appendSuggestions(['Não, quero comprar o curso', 'Como funciona o curso?']);
     });
 
@@ -233,8 +232,20 @@ async function handleResponse(text){
 
   if(lowerText==='como funciona o curso?'){
     await showTyping();
-    appendBubble('Vou te explicar meu bem 💚 O curso tem o intuito de te ensinar a criar uma modelo do job. Através do curso, você vai adquirir links, dicas e o passo a passo completo para criar uma operação do zero e começar a faturar utilizando sua modelo. Além disso, aprenderá a criar sua própria modelo do job no curso Founder. Vamos iniciar o curso?','bot');
-    setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),600);
+    appendBubble('Vou te explicar meu bem 💚 O curso te ensina a criar uma modelo do job do zero. Você vai adquirir links, dicas e o passo a passo completo para montar sua operação e começar a faturar. No curso Founder, você aprende inclusive a criar sua própria modelo com IA. Vamos iniciar o curso?','bot');
+    
+    // Novo trecho: envia os vídeos logo em seguida
+    setTimeout(async ()=>{
+      await showTyping();
+      appendBubble('Vou te enviar 3 links de vídeos para você entender como é o curso, tá bom? 💕','bot');
+      await showTyping();
+      appendBubble('<a href="https://youtu.be/9IUyZMgRtFs" target="_blank">https://youtu.be/9IUyZMgRtFs</a>','bot');
+      await showTyping();
+      appendBubble('<a href="https://youtu.be/veENgsiL_DA" target="_blank">https://youtu.be/veENgsiL_DA</a>','bot');
+      await showTyping();
+      appendBubble('<a href="https://youtu.be/rzvbOZZZad0" target="_blank">https://youtu.be/rzvbOZZZad0</a>','bot');
+      setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),400);
+    },600);
     return;
   }
 
@@ -260,10 +271,7 @@ async function handleResponse(text){
     await showTyping();
     appendBubble('Ótimo 💕 Vou te enviar alguns detalhes sobre o curso.','bot');
     await showTyping();
-    appendBubble(
-      'Temos 3 modelos de curso: o Hot Starter (básico para criar sua própria modelo), o Hot Essential (do básico ao avançado, com links e dicas valiosas) e o Hot Founder (estrutura completa com IA). Qual dos 3 você tem interesse?',
-      'bot'
-    );
+    appendBubble('Temos 3 modelos de curso: o Hot Starter (básico para criar sua própria modelo), o Hot Essential (do básico ao avançado, com links e dicas valiosas) e o Hot Founder (estrutura completa com IA). Qual dos 3 você tem interesse?','bot');
     setTimeout(async ()=>{
       await showTyping();
       appendBubble('Vou te mandar 3 vídeos para você saber o que vai adquirir no curso:','bot');
