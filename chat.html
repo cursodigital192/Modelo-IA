@@ -1,318 +1,233 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-<title>Chat WhatsApp - Simulado</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat com a Modelo IA</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background-color: #0e0e0e;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+    }
 
-<!-- Facebook Pixel Code -->
-<script>
-  !function(f,b,e,v,n,t,s){
-    if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    #chat-container {
+      width: 95%;
+      max-width: 400px;
+      background: #1c1c1c;
+      border-radius: 15px;
+      display: flex;
+      flex-direction: column;
+      height: 85vh;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    #messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bubble {
+      max-width: 80%;
+      margin-bottom: 10px;
+      padding: 10px 14px;
+      border-radius: 15px;
+      line-height: 1.4;
+    }
+
+    .user {
+      align-self: flex-end;
+      background-color: #4a90e2;
+    }
+
+    .bot {
+      align-self: flex-start;
+      background-color: #2c2c2c;
+    }
+
+    .bubble a {
+      color: #4ea5f7; /* azul claro */
+      text-decoration: underline;
+    }
+
+    .bubble a:hover {
+      color: #73c0ff;
+    }
+
+    #input-area {
+      display: flex;
+      padding: 10px;
+      background: #111;
+    }
+
+    #input {
+      flex: 1;
+      background: #222;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 15px;
+      outline: none;
+    }
+
+    #send {
+      background: #4a90e2;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .suggestion {
+      background: #333;
+      color: #fff;
+      border: none;
+      border-radius: 15px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.3s;
+    }
+
+    .suggestion:hover {
+      background: #555;
+    }
+  </style>
+
+  <!-- Pixel do Facebook -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)
-  }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', '1623450888382085'); 
-  fbq('track', 'PageView');
-</script>
-<noscript>
-  <img height="1" width="1" style="display:none"
-  src="https://www.facebook.com/tr?id=1623450888382085&ev=PageView&noscript=1"/>
-</noscript>
-<!-- End Facebook Pixel Code -->
-
-<style>
-  *{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, Arial, sans-serif}
-  body{background:#121b22;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;padding:0}
-  .app{
-    width:95%;
-    max-width:360px;
-    height:85vh;
-    background:#1e2a33;
-    border-radius:16px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.3);
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
-  }
-  .header{
-    height:60px;
-    padding:8px 12px;
-    display:flex;
-    align-items:center;
-    border-bottom:1px solid #2c3e50;
-    background:#1e2a33;
-    z-index:10;
-  }
-  .avatar{width:40px;height:40px;border-radius:50%;overflow:hidden;margin-right:10px;flex-shrink:0;background:#ccc}
-  .avatar img{width:100%;height:100%;object-fit:cover}
-  .meta{flex:1}
-  .name{font-weight:600;color:#fff;font-size:14px}
-  .status{font-size:10px;color:#9aa0a6}
-  .messages{
-    flex:1;
-    padding:12px;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    overflow-y:auto;
-    background:#121b22;
-  }
-  .messages::-webkit-scrollbar{width:5px}
-  .messages::-webkit-scrollbar-thumb{background-color:#444;border-radius:3px}
-  .bubble{max-width:75%;padding:6px 10px;border-radius:16px;line-height:1.35;word-wrap:break-word;font-size:13px}
-  .from-bot{background:#2c3e50;color:#fff;align-self:flex-start;border-top-left-radius:6px}
-  .from-me{background:#25d366;color:#000;align-self:flex-end;border-top-right-radius:6px}
-  .composer{
-    border-top:1px solid #2c3e50;
-    padding:6px;
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-    background:#1e2a33;
-  }
-  .row{display:flex;align-items:center;gap:4px}
-  .input{flex:1;background:#2c3e50;border-radius:20px;padding:6px 10px;min-height:36px;display:flex;align-items:center;color:#fff;font-size:13px}
-  .input[contenteditable]{outline:none}
-  .btn{background:#25d366;border-radius:12px;padding:6px 10px;color:white;font-weight:600;border:none;cursor:pointer;font-size:12px}
-  .suggestions-container{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
-  .suggestion-btn{background:#25d366;color:white;padding:4px 10px;border-radius:16px;border:none;cursor:pointer;font-weight:600;font-size:12px}
-  .checkout-link{display:block;margin-top:4px;color:#4ea5f7;text-decoration:underline;cursor:pointer;font-weight:600;font-size:13px;}
-  .typing-bubble{display:flex;align-items:center;gap:3px;justify-content:flex-start;max-width:40px;height:20px;}
-  .dot{width:5px;height:5px;background:#666;border-radius:50%;animation:blink 1s infinite;}
-  .dot:nth-child(2){animation-delay:0.2s;}
-  .dot:nth-child(3){animation-delay:0.4s;}
-  @keyframes blink{0%,80%,100%{opacity:0.2}40%{opacity:1}}
-
-  .audio{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    background:#2c3e50;
-    border-radius:16px;
-    padding:8px 12px;
-    width:220px;
-    height:50px;
-    gap:8px;
-  }
-  .play{
-    width:28px;height:28px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    background:#25d366;color:#fff;font-size:16px;cursor:pointer;flex-shrink:0;
-  }
-  .waveform{
-    flex:1;height:25px;
-    background:repeating-linear-gradient(to right,#9aa0a6 0 2px,transparent 2px 4px);
-    border-radius:4px;opacity:0.8;
-  }
-  .profile-audio{width:34px;height:34px;border-radius:50%;overflow:hidden;flex-shrink:0;}
-  .profile-audio img{width:100%;height:100%;object-fit:cover}
-
-  /* Links dentro das bolhas em azul claro */
-  .bubble a {
-    color: #4ea5f7;
-    text-decoration: underline;
-  }
-  .bubble a:hover {
-    color: #73c0ff;
-  }
-</style>
+    if(!f._fbq)f._fbq=n; n.push=n; n.loaded=!0; n.version='2.0';
+    n.queue=[]; t=b.createElement(e); t.async=!0;
+    t.src=v; s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1623450888382085');
+    fbq('track', 'PageView');
+  </script>
 </head>
 <body>
-<div class="app">
-  <div class="header">
-    <div class="avatar">
-      <img src="https://somosnews.com.mx/wp-content/uploads/2024/02/modelos-triunfan-redes-sociales-inteligencia-artificial.jpg" alt="Melissa">
-    </div>
-    <div class="meta">
-      <div class="name">Melissa Castro - Modelo IA</div>
-      <div class="status" id="status">online</div>
+
+  <div id="chat-container">
+    <div id="messages"></div>
+    <div id="input-area">
+      <input type="text" id="input" placeholder="Digite sua mensagem..." />
+      <button id="send">➤</button>
     </div>
   </div>
 
-  <div class="messages" id="messages"></div>
+  <script>
+    const messages = document.getElementById('messages');
+    const input = document.getElementById('input');
+    const sendBtn = document.getElementById('send');
 
-  <div class="composer">
-    <div id="suggestionsArea" class="suggestions-container"></div>
-    <div class="row">
-      <div class="input" id="input" contenteditable="true" role="textbox" aria-multiline="true" placeholder="Escreva uma mensagem..."></div>
-      <button class="btn" id="sendBtn">Enviar</button>
-    </div>
-  </div>
-</div>
+    function appendBubble(text, sender = 'bot') {
+      const div = document.createElement('div');
+      div.classList.add('bubble', sender);
+      div.innerHTML = text;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
 
-<script>
-const messagesEl = document.getElementById('messages');
-const inputEl = document.getElementById('input');
-const sendBtn = document.getElementById('sendBtn');
-const suggestionsArea = document.getElementById('suggestionsArea');
-const statusEl = document.getElementById('status');
-
-let userResponded = false;
-let firstAutoResponseDone = false;
-
-function showTyping(duration = 1000){
-  statusEl.innerText = 'digitando...';
-  const typingBubble = document.createElement('div');
-  typingBubble.className = 'bubble from-bot';
-  typingBubble.innerHTML = `<div class="typing-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
-  messagesEl.appendChild(typingBubble);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-  return new Promise(resolve=>{
-    setTimeout(()=>{
-      typingBubble.remove();
-      statusEl.innerText = 'online';
-      resolve();
-    }, duration);
-  });
-}
-
-function appendBubble(text, who='bot', extras={}){
-  const b = document.createElement('div');
-  b.className = 'bubble ' + (who==='bot' ? 'from-bot' : 'from-me');
-
-  if(extras.isAudio){
-    const audioWrap = document.createElement('div');
-    audioWrap.className = 'audio';
-    const play = document.createElement('div');
-    play.className = 'play';
-    play.innerHTML = '▶';
-    const waveform = document.createElement('div');
-    waveform.className = 'waveform';
-    const profile = document.createElement('div');
-    profile.className = 'profile-audio';
-    profile.innerHTML = `<img src="https://somosnews.com.mx/wp-content/uploads/2024/02/modelos-triunfan-redes-sociales-inteligencia-artificial.jpg" alt="Melissa">`;
-    const audioEl = new Audio(extras.src);
-
-    play.addEventListener('click', ()=>{
-      audioEl.play();
-      play.style.pointerEvents='none';
-      play.style.opacity='0.6';
-      appendSuggestions(['Quero comprar o curso', 'Como funciona o curso?']);
-    });
-
-    audioWrap.appendChild(play);
-    audioWrap.appendChild(waveform);
-    audioWrap.appendChild(profile);
-    b.appendChild(audioWrap);
-  } 
-  else if(extras.isCheckout){
-    b.innerHTML = `${text}<a class="checkout-link" href="${extras.link}" target="_blank">Clique aqui para comprar</a>`;
-    appendSuggestions(['Escolher outras opções']);
-  } 
-  else {
-    b.innerHTML = text.replace(/\n/g,'<br>');
-  }
-
-  messagesEl.appendChild(b);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-}
-
-function appendSuggestions(options){
-  suggestionsArea.innerHTML='';
-  options.forEach(opt=>{
-    const btn = document.createElement('button');
-    btn.className='suggestion-btn';
-    btn.innerText=opt;
-    btn.addEventListener('click', async ()=>{
-      appendBubble(opt,'me');
-      suggestionsArea.innerHTML='';
-      await handleResponse(opt);
-    });
-    suggestionsArea.appendChild(btn);
-  });
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-}
-
-async function handleResponse(text){
-  const lowerText = text.toLowerCase();
-
-  if(lowerText==='como funciona o curso?'){
-    await showTyping();
-    appendBubble('Vou te explicar meu bem 💚 O curso te ensina a criar uma modelo do zero. Você vai adquirir links, dicas e o passo a passo completo para montar sua operação e começar a faturar. No curso profissional, você aprende inclusive a criar sua própria modelo com IA. Vamos monetizar sua modelo? Escolha uma das opções abaixo!','bot');
-    
-    // Novo trecho: envia os vídeos logo em seguida
-    setTimeout(async ()=>{
-      await showTyping();
-      appendBubble('Vou te enviar 3 links de vídeos para você entender como é o curso, tá bom? 💕','bot');
-      await showTyping();
-      appendBubble('<a href="https://youtu.be/9IUyZMgRtFs" target="_blank">https://youtu.be/9IUyZMgRtFs</a>','bot');
-      await showTyping();
-      appendBubble('<a href="https://youtu.be/veENgsiL_DA" target="_blank">https://youtu.be/veENgsiL_DA</a>','bot');
-      await showTyping();
-      appendBubble('<a href="https://youtu.be/rzvbOZZZad0" target="_blank">https://youtu.be/rzvbOZZZad0</a>','bot');
-      setTimeout(()=>appendSuggestions(['Curso Iniciante','Curso Essential','Curso Profissional']),400);
-    },600);
-    return;
-  }
-
-  if(lowerText==='escolher outras opções'){
-    await showTyping();
-    appendBubble('Ah perfeito meu amor 💕 Qual você gostaria então? O Hot Starter, Hot Essential ou Hot Founder?','bot');
-    setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),400);
-    return;
-  }
-
-  if(['hot starter','hot essential','hot founder'].includes(lowerText)){
-    let link='';
-    if(lowerText==='hot starter') link='https://go.perfectpay.com.br/PPU38CQ08HP';
-    else if(lowerText==='hot essential') link='https://go.perfectpay.com.br/PPU38CQ08I2';
-    else if(lowerText==='hot founder') link='https://go.perfectpay.com.br/PPU38CQ08I3';
-    await showTyping();
-    appendBubble('Ótima escolha 💚 Vou te enviar o link de checkout para você iniciar suas operações agora mesmo!','bot',{isCheckout:true, link:link});
-    return;
-  }
-
-  if(!firstAutoResponseDone){
-    firstAutoResponseDone = true;
-    await showTyping();
-    appendBubble('Ótimo 💕 Vou te enviar alguns detalhes sobre o curso.','bot');
-    await showTyping();
-    appendBubble('Temos 3 modelos de curso: o Hot Starter (básico para criar sua própria modelo), o Hot Essential (do básico ao avançado, com links e dicas valiosas) e o Hot Founder (estrutura completa com IA). Qual dos 3 você tem interesse?','bot');
-    setTimeout(async ()=>{
-      await showTyping();
-      appendBubble('Vou te mandar 3 vídeos para você saber o que vai adquirir no curso:','bot');
-      await showTyping();
-      appendBubble('<a href="https://youtu.be/9IUyZMgRtFs" target="_blank">https://youtu.be/9IUyZMgRtFs</a>','bot');
-      await showTyping();
-      appendBubble('<a href="https://youtu.be/veENgsiL_DA" target="_blank">https://youtu.be/veENgsiL_DA</a>','bot');
-      await showTyping();
-      appendBubble('<a href="https://youtu.be/rzvbOZZZad0" target="_blank">https://youtu.be/rzvbOZZZad0</a>','bot');
-      setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),400);
-    },500);
-  }
-}
-
-function sendMessage(){
-  const text = inputEl.innerText.trim();
-  if(!text) return;
-  appendBubble(text,'me');
-  inputEl.innerText = '';
-
-  if(!userResponded){
-    userResponded = true;
-    setTimeout(()=>{
-      appendBubble(null,'bot',{
-        isAudio:true,
-        src:'https://github.com/cursodigital192/audio-modelo-conversafake/raw/main/audio.mp3'
+    function appendSuggestions(options) {
+      const div = document.createElement('div');
+      div.classList.add('suggestions');
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.classList.add('suggestion');
+        btn.textContent = opt.text;
+        btn.addEventListener('click', () => opt.action());
+        div.appendChild(btn);
       });
-    }, 600);
-  } else {
-    handleResponse(text);
-  }
-}
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
 
-sendBtn.addEventListener('click', sendMessage);
-inputEl.addEventListener('keydown', e=>{
-  if(e.key==='Enter' && !e.shiftKey){e.preventDefault(); sendMessage();}
-});
+    function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+      appendBubble(text, 'user');
+      input.value = '';
+      handleUserMessage(text);
+    }
 
-window.addEventListener('load', ()=>{
-  appendBubble('Oiie meu amor, eu me chamo Melissa. Quer aprender a criar uma modelo igual a mim para o Instagram? 💚','bot');
-});
-</script>
+    function handleUserMessage(text) {
+      text = text.toLowerCase();
+
+      if (text.includes('oi') || text.includes('olá')) {
+        setTimeout(() => appendBubble('Oi meu amor 💚 tudo bem?'), 600);
+        setTimeout(() => appendBubble('Temos 3 modelos de curso, sendo o Curso Iniciante, onde você vai aprender o básico como criar sua própria modelo do job; o Hot Essential, onde você aprenderá do básico ao avançado e receberá todos os links e dicas valiosas; e, por fim, para uma estrutura sólida e escalável, temos o Curso Profissional, onde você aprenderá tudo inclusive criar sua modelo com IA. Qual dos 3 você tem interesse?'), 1500);
+        setTimeout(() => appendBubble('Vou te mandar 3 links de vídeos para você saber o que vai adquirir no curso 💚'), 5000);
+        setTimeout(() => {
+          appendBubble('<a href="https://youtu.be/9IUyZMgRtFs" target="_blank">🎥 Vídeo 1</a>');
+          appendBubble('<a href="https://youtu.be/veENgsiL_DA" target="_blank">🎥 Vídeo 2</a>');
+          appendBubble('<a href="https://youtu.be/rzvbOZZZad0" target="_blank">🎥 Vídeo 3</a>');
+        }, 6000);
+        setTimeout(() => {
+          appendSuggestions([
+            { text: 'Não, quero comprar o curso', action: showCourses },
+            { text: 'Como funciona o curso?', action: explainCourse }
+          ]);
+        }, 7000);
+      }
+    }
+
+    function explainCourse() {
+      appendBubble('Vou te explicar meu bem 💚 O curso te ensina a criar uma modelo do job do zero. Você vai adquirir links, dicas e o passo a passo completo para montar sua operação e começar a faturar. No curso Profissional, você aprende inclusive a criar sua própria modelo com IA. Vamos iniciar o curso?');
+      setTimeout(() => appendBubble('Vou te enviar 3 links de vídeos para você entender como é o curso tabom?'), 3000);
+      setTimeout(() => {
+        appendBubble('<a href="https://youtu.be/9IUyZMgRtFs" target="_blank">🎥 Vídeo 1</a>');
+        appendBubble('<a href="https://youtu.be/veENgsiL_DA" target="_blank">🎥 Vídeo 2</a>');
+        appendBubble('<a href="https://youtu.be/rzvbOZZZad0" target="_blank">🎥 Vídeo 3</a>');
+      }, 4000);
+      setTimeout(() => showCourses(), 6000);
+    }
+
+    function showCourses() {
+      appendBubble('Escolha o curso que deseja iniciar 💚');
+      setTimeout(() => {
+        appendSuggestions([
+          { text: 'Curso Iniciante', action: () => window.open('https://go.perfectpay.com.br/PPU38CQ08HP', '_blank') },
+          { text: 'Curso Hot Essential', action: () => window.open('https://go.perfectpay.com.br/PPU38CQ08I2', '_blank') },
+          { text: 'Curso Profissional', action: () => window.open('https://go.perfectpay.com.br/PPU38CQ08I3', '_blank') },
+        ]);
+      }, 1000);
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    window.addEventListener('load', () => {
+      appendBubble('Oiie meu amor, tudo bem?? 💚');
+    });
+  </script>
 </body>
 </html>
