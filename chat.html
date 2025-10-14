@@ -7,14 +7,14 @@
 
 <!-- Facebook Pixel Code -->
 <script>
-  !function(f,b,e,v,n,t,s)
-  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-  n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];
-  s.parentNode.insertBefore(t,s)}(window, document,'script',
-  'https://connect.facebook.net/en_US/fbevents.js');
+  !function(f,b,e,v,n,t,s){
+    if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)
+  }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
   fbq('init', '1623450888382085'); 
   fbq('track', 'PageView');
 </script>
@@ -44,8 +44,6 @@
     display:flex;
     align-items:center;
     border-bottom:1px solid #2c3e50;
-    position:sticky;
-    top:0;
     background:#1e2a33;
     z-index:10;
   }
@@ -64,9 +62,8 @@
     background:#121b22;
   }
   .messages::-webkit-scrollbar{width:5px}
-  .messages::-webkit-scrollbar-track{background:#121b22}
   .messages::-webkit-scrollbar-thumb{background-color:#444;border-radius:3px}
-  .bubble{max-width:75%;padding:6px 10px;border-radius:16px;line-height:1.35;position:relative;word-wrap: break-word;font-size:13px;}
+  .bubble{max-width:75%;padding:6px 10px;border-radius:16px;line-height:1.35;word-wrap:break-word;font-size:13px}
   .from-bot{background:#2c3e50;color:#fff;align-self:flex-start;border-top-left-radius:6px}
   .from-me{background:#25d366;color:#000;align-self:flex-end;border-top-right-radius:6px}
   .composer{
@@ -84,8 +81,8 @@
   .suggestions-container{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
   .suggestion-btn{background:#25d366;color:white;padding:4px 10px;border-radius:16px;border:none;cursor:pointer;font-weight:600;font-size:12px}
   .checkout-link{display:block;margin-top:4px;color:#4ea5f7;text-decoration:underline;cursor:pointer;font-weight:600;font-size:13px;}
-  .typing-bubble{display:flex;align-items:center;gap:3px;justify-content:flex-start;max-width:40px; height:20px;}
-  .dot{width:5px;height:5px;background:#666;border-radius:50%;animation:blink 1s infinite;animation-delay:0s;}
+  .typing-bubble{display:flex;align-items:center;gap:3px;justify-content:flex-start;max-width:40px;height:20px;}
+  .dot{width:5px;height:5px;background:#666;border-radius:50%;animation:blink 1s infinite;}
   .dot:nth-child(2){animation-delay:0.2s;}
   .dot:nth-child(3){animation-delay:0.4s;}
   @keyframes blink{0%,80%,100%{opacity:0.2}40%{opacity:1}}
@@ -102,41 +99,17 @@
     gap:8px;
   }
   .play{
-    width:28px;
-    height:28px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:#25d366;
-    color:#fff;
-    font-size:16px;
-    cursor:pointer;
-    flex-shrink:0;
+    width:28px;height:28px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:#25d366;color:#fff;font-size:16px;cursor:pointer;flex-shrink:0;
   }
   .waveform{
-    flex:1;
-    height:25px;
-    background:repeating-linear-gradient(
-      to right,
-      #9aa0a6 0 2px,
-      transparent 2px 4px
-    );
-    border-radius:4px;
-    opacity:0.8;
+    flex:1;height:25px;
+    background:repeating-linear-gradient(to right,#9aa0a6 0 2px,transparent 2px 4px);
+    border-radius:4px;opacity:0.8;
   }
-  .profile-audio{
-    width:34px;
-    height:34px;
-    border-radius:50%;
-    overflow:hidden;
-    flex-shrink:0;
-  }
-  .profile-audio img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-  }
+  .profile-audio{width:34px;height:34px;border-radius:50%;overflow:hidden;flex-shrink:0;}
+  .profile-audio img{width:100%;height:100%;object-fit:cover}
 
   /* Links dentro das bolhas em azul claro */
   .bubble a {
@@ -185,7 +158,6 @@ function showTyping(duration = 1000){
   statusEl.innerText = 'digitando...';
   const typingBubble = document.createElement('div');
   typingBubble.className = 'bubble from-bot';
-  typingBubble.id = 'typingBubble';
   typingBubble.innerHTML = `<div class="typing-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
   messagesEl.appendChild(typingBubble);
   messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -205,25 +177,22 @@ function appendBubble(text, who='bot', extras={}){
   if(extras.isAudio){
     const audioWrap = document.createElement('div');
     audioWrap.className = 'audio';
-
     const play = document.createElement('div');
     play.className = 'play';
     play.innerHTML = '▶';
-
     const waveform = document.createElement('div');
     waveform.className = 'waveform';
-
     const profile = document.createElement('div');
     profile.className = 'profile-audio';
     profile.innerHTML = `<img src="https://somosnews.com.mx/wp-content/uploads/2024/02/modelos-triunfan-redes-sociales-inteligencia-artificial.jpg" alt="Melissa">`;
-
     const audioEl = new Audio(extras.src);
 
     play.addEventListener('click', ()=>{
       audioEl.play();
       play.style.pointerEvents='none';
       play.style.opacity='0.6';
-      appendSuggestions(['Não, quero comprar o curso']);
+      // ADICIONADAS DUAS OPÇÕES AQUI 👇
+      appendSuggestions(['Não, quero comprar o curso', 'Como funciona o curso?']);
     });
 
     audioWrap.appendChild(play);
@@ -262,9 +231,16 @@ function appendSuggestions(options){
 async function handleResponse(text){
   const lowerText = text.toLowerCase();
 
+  if(lowerText==='como funciona o curso?'){
+    await showTyping();
+    appendBubble('Vou te explicar meu bem 💚 O curso tem o intuito de te ensinar a criar uma modelo do job. Através do curso, você vai adquirir links, dicas e o passo a passo completo para criar uma operação do zero e começar a faturar utilizando sua modelo. Além disso, aprenderá a criar sua própria modelo do job no curso Founder. Vamos iniciar o curso?','bot');
+    setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),600);
+    return;
+  }
+
   if(lowerText==='escolher outras opções'){
     await showTyping();
-    appendBubble('Ah perfeito meu amor, qual você gostaria então. O Hot Starter, Hot Essential ou Hot Founder?','bot');
+    appendBubble('Ah perfeito meu amor 💕 Qual você gostaria então? O Hot Starter, Hot Essential ou Hot Founder?','bot');
     setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),400);
     return;
   }
@@ -274,38 +250,31 @@ async function handleResponse(text){
     if(lowerText==='hot starter') link='https://go.perfectpay.com.br/PPU38CQ08HP';
     else if(lowerText==='hot essential') link='https://go.perfectpay.com.br/PPU38CQ08I2';
     else if(lowerText==='hot founder') link='https://go.perfectpay.com.br/PPU38CQ08I3';
-
     await showTyping();
-    appendBubble('Ótima escolha, vou te enviar o link checkout para você iniciar suas operações agora mesmo!','bot',{isCheckout:true, link:link});
+    appendBubble('Ótima escolha 💚 Vou te enviar o link de checkout para você iniciar suas operações agora mesmo!','bot',{isCheckout:true, link:link});
     return;
   }
 
   if(!firstAutoResponseDone){
     firstAutoResponseDone = true;
     await showTyping();
-    appendBubble('Ótimo, vou te enviar alguns detalhes sobre o curso','bot');
+    appendBubble('Ótimo 💕 Vou te enviar alguns detalhes sobre o curso.','bot');
     await showTyping();
     appendBubble(
-      'Temos 3 modelos de curso, sendo o Hot Starter, onde você vai aprender o básico como criar sua própria modelo do job; o Hot Essential, onde você aprenderá do básico ao avançado e receberá todos os links e dicas valiosas; e, por fim, para uma estrutura sólida e escalável, temos o Hot Founder, onde você aprenderá tudo inclusive criar sua modelo com IA. Qual dos 3 você tem interesse?',
+      'Temos 3 modelos de curso: o Hot Starter (básico para criar sua própria modelo), o Hot Essential (do básico ao avançado, com links e dicas valiosas) e o Hot Founder (estrutura completa com IA). Qual dos 3 você tem interesse?',
       'bot'
     );
-
-    // Mensagens adicionais com links de vídeos
     setTimeout(async ()=>{
       await showTyping();
-      appendBubble('Vou te mandar 3 links de vídeos para você saber o que vai adquirir no curso','bot');
-
+      appendBubble('Vou te mandar 3 vídeos para você saber o que vai adquirir no curso:','bot');
       await showTyping();
       appendBubble('<a href="https://youtu.be/9IUyZMgRtFs" target="_blank">https://youtu.be/9IUyZMgRtFs</a>','bot');
-
       await showTyping();
       appendBubble('<a href="https://youtu.be/veENgsiL_DA" target="_blank">https://youtu.be/veENgsiL_DA</a>','bot');
-
       await showTyping();
       appendBubble('<a href="https://youtu.be/rzvbOZZZad0" target="_blank">https://youtu.be/rzvbOZZZad0</a>','bot');
-
       setTimeout(()=>appendSuggestions(['Hot Starter','Hot Essential','Hot Founder']),400);
-    }, 500);
+    },500);
   }
 }
 
@@ -313,7 +282,6 @@ function sendMessage(){
   const text = inputEl.innerText.trim();
   if(!text) return;
   appendBubble(text,'me');
-  inputEl.value = '';
   inputEl.innerText = '';
 
   if(!userResponded){
@@ -335,7 +303,7 @@ inputEl.addEventListener('keydown', e=>{
 });
 
 window.addEventListener('load', ()=>{
-  appendBubble('Oiie meu amor, tudo bem??','bot');
+  appendBubble('Oiie meu amor, tudo bem?? 💚','bot');
 });
 </script>
 </body>
